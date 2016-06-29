@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://ijustloveses.github.io/2016/06/28/hexo-tricks/</loc>
+    <loc>http://ijustloveses.github.io/2016/06/15/helloworld/</loc>
     
-    <lastmod>2016-06-29T03:27:18.000Z</lastmod>
+    <lastmod>2016-06-29T05:14:52.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part1/</loc>
     
-    <lastmod>2016-06-29T03:01:12.000Z</lastmod>
+    <lastmod>2016-06-29T05:11:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://ijustloveses.github.io/2016/06/28/hexo-tricks/</loc>
+    
+    <lastmod>2016-06-29T05:11:15.000Z</lastmod>
     
   </url>
   

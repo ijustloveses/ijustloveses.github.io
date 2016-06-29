@@ -86,16 +86,16 @@
 
 
 
-<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and LockHow to create a thread12345678910111213public class HelloWorld &amp;#123;  public static void main(String[] args) throws InterruptedExcepti">
+<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock">
 <meta property="og:type" content="article">
 <meta property="og:title" content="7concurrent_models_in_7weeks_part1">
 <meta property="og:url" content="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part1/index.html">
 <meta property="og:site_name" content="泡茶说">
-<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and LockHow to create a thread12345678910111213public class HelloWorld &amp;#123;  public static void main(String[] args) throws InterruptedExcepti">
-<meta property="og:updated_time" content="2016-06-29T03:01:12.000Z">
+<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock">
+<meta property="og:updated_time" content="2016-06-29T05:11:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="7concurrent_models_in_7weeks_part1">
-<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and LockHow to create a thread12345678910111213public class HelloWorld &amp;#123;  public static void main(String[] args) throws InterruptedExcepti">
+<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock">
 
 
 
@@ -327,7 +327,9 @@
       
 
       
-        <h1 id="Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock"><a href="#Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock" class="headerlink" title="Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock"></a>Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock</h1><p><strong>How to create a thread</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    Thread myThread = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          System.out.println(<span class="string">"Hello from new thread"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;;</span><br><span class="line">    myThread.start();</span><br><span class="line">    Thread.yield();</span><br><span class="line">    System.out.println(<span class="string">"Hello from main thread"</span>);</span><br><span class="line">    myThread.join();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+        <p>Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock</p>
+<a id="more"></a>
+<p><strong>How to create a thread</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    Thread myThread = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          System.out.println(<span class="string">"Hello from new thread"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;;</span><br><span class="line">    myThread.start();</span><br><span class="line">    Thread.yield();</span><br><span class="line">    System.out.println(<span class="string">"Hello from main thread"</span>);</span><br><span class="line">    myThread.join();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>Why Thread.yield();<br>yield() is a hint to the scheduler that the current thread is willing to yield the current use of a processor.<br>Without this call, the startup overhead of the new thread would mean that the main thread would almost certainly print first.</p>
 <p><strong>Intrinsic Lock</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">increment</span><span class="params">()</span> </span>&#123; ++count; &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> count; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>Intrinsic lock comes built into every Java object.</p>
@@ -504,6 +506,10 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/06/15/helloworld/" rel="next" title="helloworld">
+                <i class="fa fa-chevron-left"></i> helloworld
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
@@ -582,7 +588,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -646,7 +652,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock"><span class="nav-number">1.</span> <span class="nav-text">Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
         </section>

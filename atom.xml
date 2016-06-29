@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://ijustloveses.github.io/"/>
-  <updated>2016-06-29T03:27:18.000Z</updated>
+  <updated>2016-06-29T05:11:15.000Z</updated>
   <id>http://ijustloveses.github.io/</id>
   
   <author>
@@ -20,9 +20,11 @@
     <link href="http://ijustloveses.github.io/2016/06/28/hexo-tricks/"/>
     <id>http://ijustloveses.github.io/2016/06/28/hexo-tricks/</id>
     <published>2016-06-28T19:14:10.000Z</published>
-    <updated>2016-06-29T03:27:18.000Z</updated>
+    <updated>2016-06-29T05:11:15.000Z</updated>
     
-    <content type="html">&lt;h1 id=&quot;Tricks-and-Tips-on-Hexo&quot;&gt;&lt;a href=&quot;#Tricks-and-Tips-on-Hexo&quot; class=&quot;headerlink&quot; title=&quot;Tricks and Tips on Hexo&quot;&gt;&lt;/a&gt;Tricks and Tips on Hexo&lt;/h1&gt;&lt;h3 id=&quot;Tags-amp-Categories&quot;&gt;&lt;a href=&quot;#Tags-amp-Categories&quot; class=&quot;headerlink&quot; title=&quot;Tags &amp;amp; Categories&quot;&gt;&lt;/a&gt;Tags &amp;amp; Categories&lt;/h3&gt;&lt;ul&gt;
+    <content type="html">&lt;p&gt;Tricks and Tips on Hexo&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;Tags-amp-Categories&quot;&gt;&lt;a href=&quot;#Tags-amp-Categories&quot; class=&quot;headerlink&quot; title=&quot;Tags &amp;amp; Categories&quot;&gt;&lt;/a&gt;Tags &amp;amp; Categories&lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;Next 主题需要手动生成 tags &amp;amp; categories，使用 hexo new page tags(categories) 命令，以 page 为模版&lt;/li&gt;
 &lt;li&gt;categories 分类，我通常只设置一个；据说设置多个时可能变成分级分类，而不是多个分类并列，未实践&lt;/li&gt;
 &lt;li&gt;tags &amp;amp; categories 是中文时，如果想要 url 中是英文，可以在 _config.yml 的 category_map &amp;amp; tag_map 中设置&lt;/li&gt;
@@ -31,12 +33,13 @@
 &lt;li&gt;hexo g 生成的静态页面，通常在 master 分支管理&lt;/li&gt;
 &lt;li&gt;源码另外在 src 分支管理&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&quot;常见问题解决&quot;&gt;&lt;a href=&quot;#常见问题解决&quot; class=&quot;headerlink&quot; title=&quot;常见问题解决&quot;&gt;&lt;/a&gt;常见问题解决&lt;/h3&gt;&lt;h5 id=&quot;TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot;&gt;&lt;a href=&quot;#TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot; class=&quot;headerlink&quot; title=&quot;TypeError: Cannot set property ‘lastIndex’ of undefined&quot;&gt;&lt;/a&gt;TypeError: Cannot set property ‘lastIndex’ of undefined&lt;/h5&gt;&lt;p&gt;这个错误在 hexo g 生成静态网页时发生，在 _config.yml 中，找到 auto_detect 并设置为 false，解决&lt;/p&gt;
+&lt;h3 id=&quot;常见问题解决&quot;&gt;&lt;a href=&quot;#常见问题解决&quot; class=&quot;headerlink&quot; title=&quot;常见问题解决&quot;&gt;&lt;/a&gt;常见问题解决&lt;/h3&gt;&lt;p&gt;Refer: &lt;a href=&quot;http://theme-next.iissnan.com/faqs.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;常见问题&lt;/a&gt;&lt;/p&gt;
+&lt;h5 id=&quot;TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot;&gt;&lt;a href=&quot;#TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot; class=&quot;headerlink&quot; title=&quot;TypeError: Cannot set property ‘lastIndex’ of undefined&quot;&gt;&lt;/a&gt;TypeError: Cannot set property ‘lastIndex’ of undefined&lt;/h5&gt;&lt;p&gt;这个错误在 hexo g 生成静态网页时发生，在 _config.yml 中，找到 auto_detect 并设置为 false，解决&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;h1 id=&quot;Tricks-and-Tips-on-Hexo&quot;&gt;&lt;a href=&quot;#Tricks-and-Tips-on-Hexo&quot; class=&quot;headerlink&quot; title=&quot;Tricks and Tips on Hexo&quot;&gt;&lt;/a&gt;Tricks and Tips o
+      &lt;p&gt;Tricks and Tips on Hexo&lt;/p&gt;
     
     </summary>
     
@@ -54,9 +57,11 @@
     <link href="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part1/"/>
     <id>http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part1/</id>
     <published>2016-06-28T18:27:25.000Z</published>
-    <updated>2016-06-29T03:01:12.000Z</updated>
+    <updated>2016-06-29T05:11:15.000Z</updated>
     
-    <content type="html">&lt;h1 id=&quot;Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock&quot;&gt;&lt;a href=&quot;#Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock&quot; class=&quot;headerlink&quot; title=&quot;Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock&quot;&gt;&lt;/a&gt;Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;How to create a thread&lt;/strong&gt;&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;HelloWorld&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String[] args)&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; InterruptedException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread myThread = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; Thread() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          System.out.println(&lt;span class=&quot;string&quot;&gt;&quot;Hello from new thread&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    myThread.start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread.yield();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    System.out.println(&lt;span class=&quot;string&quot;&gt;&quot;Hello from main thread&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    myThread.join();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    <content type="html">&lt;p&gt;Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;&lt;strong&gt;How to create a thread&lt;/strong&gt;&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;HelloWorld&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String[] args)&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; InterruptedException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread myThread = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; Thread() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          System.out.println(&lt;span class=&quot;string&quot;&gt;&quot;Hello from new thread&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    myThread.start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread.yield();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    System.out.println(&lt;span class=&quot;string&quot;&gt;&quot;Hello from main thread&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    myThread.join();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;Why Thread.yield();&lt;br&gt;yield() is a hint to the scheduler that the current thread is willing to yield the current use of a processor.&lt;br&gt;Without this call, the startup overhead of the new thread would mean that the main thread would almost certainly print first.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Intrinsic Lock&lt;/strong&gt;&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Counter&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; count = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;increment&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123; ++count; &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;getCount&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123; &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; count; &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;Intrinsic lock comes built into every Java object.&lt;/p&gt;
@@ -201,7 +206,7 @@
     
     <summary type="html">
     
-      &lt;h1 id=&quot;Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-Lock&quot;&gt;&lt;a href=&quot;#Notes-on-7-Concurrent-Models-in-7-Weeks-Part-1-Thread-and-
+      &lt;p&gt;Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock&lt;/p&gt;
     
     </summary>
     
@@ -215,6 +220,22 @@
       <category term="7日7并发模型" scheme="http://ijustloveses.github.io/tags/7%E6%97%A57%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/"/>
     
       <category term="笔记" scheme="http://ijustloveses.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>helloworld</title>
+    <link href="http://ijustloveses.github.io/2016/06/15/helloworld/"/>
+    <id>http://ijustloveses.github.io/2016/06/15/helloworld/</id>
+    <published>2016-06-15T19:02:54.000Z</published>
+    <updated>2016-06-29T05:14:52.000Z</updated>
+    
+    <content type="html"></content>
+    
+    <summary type="html">
+    
+    </summary>
+    
     
   </entry>
   
