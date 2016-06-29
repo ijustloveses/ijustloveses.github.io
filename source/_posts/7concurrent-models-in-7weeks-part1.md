@@ -6,7 +6,8 @@ categories: 并发
 ---
 
 Notes on 7 Concurrent Models in 7 Weeks - Part 1. Thread and Lock
-====================================================================
+
+<!-- more -->
 
 **How to create a thread**
 ``` java

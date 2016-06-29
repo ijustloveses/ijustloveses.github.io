@@ -6,7 +6,8 @@ categories: misc
 ---
 
 Tricks and Tips on Hexo
-=========================
+
+<!-- more -->
 
 ### Tags & Categories
 
@@ -22,6 +23,8 @@ Tricks and Tips on Hexo
 
 
 ### 常见问题解决
+
+Refer: [常见问题](http://theme-next.iissnan.com/faqs.html)
 
 ##### TypeError: Cannot set property 'lastIndex' of undefined
 
