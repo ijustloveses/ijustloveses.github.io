@@ -1,0 +1,740 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="并发,7日7并发模型,笔记,FP,Clojure," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 2. Functional Programming with Clojure
+The rules about locking apply only to data that is both shared between threads and might change, in other words sh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="7周7并发模型 P2 - FP with Clojure">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part2/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 2. Functional Programming with Clojure
+The rules about locking apply only to data that is both shared between threads and might change, in other words sh">
+<meta property="og:updated_time" content="2016-06-29T06:24:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="7周7并发模型 P2 - FP with Clojure">
+<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 2. Functional Programming with Clojure
+The rules about locking apply only to data that is both shared between threads and might change, in other words sh">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> 7周7并发模型 P2 - FP with Clojure | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                7周7并发模型 P2 - FP with Clojure
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-28T18:27:25+00:00" content="2016-06-29">
+              2016-06-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/28/7concurrent-models-in-7weeks-part2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Notes on 7 Concurrent Models in 7 Weeks - Part 2. Functional Programming with Clojure</p>
+<p>The rules about locking apply only to data that is both shared between threads and might change, in other words shared mutable state.</p>
+<p>Functional programs have no mutable state, so they cannot suffer from any of the problems associated with shared mutable state.</p>
+<a id="more"></a>
+<h3 id="The-Perils-of-Mutable-State"><a href="#The-Perils-of-Mutable-State" class="headerlink" title="The Perils of Mutable State"></a>The Perils of Mutable State</h3><p><strong>Hidden Mutable State</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DateParser</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">parse</span><span class="params">(String s)</span> <span class="keyword">throws</span> ParseException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> format.parse(s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>It looks like thread-safe, but it is <strong>NOT</strong>, because SimpleDateFormat() has mutable state buried deep within.</p>
+<p>In Java or C, there’s no way to tell from its API that SimpleDateFormat isn’t thread-safe.</p>
+<p><strong>Escapologist Mutable State</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tournament</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Player&gt; players = <span class="keyword">new</span> LinkedList&lt;Player&gt;();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">addPlayer</span><span class="params">(Player p)</span> </span>&#123;</span><br><span class="line">        players.add(p);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Iterator&lt;Player&gt; <span class="title">getPlayerIterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> players.iterator();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>It looks like thread-safe, single private variable protected by synchronized functions, but it is <strong>NOT</strong>.</p>
+<p>The iterator returned by getPlayerIterator() still references the mutable state contained within players.</p>
+<p>If another thread calls addPlayer() while the iterator is in use, we’ll see a ConcurrentModificationException or worse. </p>
+<h3 id="Parallelism-with-Clojure"><a href="#Parallelism-with-Clojure" class="headerlink" title="Parallelism with Clojure"></a>Parallelism with Clojure</h3><h5 id="different-version-of-sum"><a href="#different-version-of-sum" class="headerlink" title="different version of sum"></a>different version of sum</h5><p>recursive version<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(defn recursive-sum [numbers]</span><br><span class="line">    (if (empty? numbers)</span><br><span class="line">        0(</span><br><span class="line">        + (first numbers) (recursive-sum (rest numbers)))))</span><br></pre></td></tr></table></figure></p>
+<p>full reduce version<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(defn reduce-sum [numbers]</span><br><span class="line">    (reduce (fn [acc x] (+ acc x)) 0 numbers))</span><br></pre></td></tr></table></figure></p>
+<p>simple reduce version<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(defn sum [numbers]</span><br><span class="line">    (reduce + numbers))</span><br></pre></td></tr></table></figure></p>
+<p>parallel version<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(ns sum.core</span><br><span class="line">    (:require [clojure.core.reducers :as r]))</span><br><span class="line">(defn parallel-sum [numbers]</span><br><span class="line">    (r/fold + numbers))</span><br></pre></td></tr></table></figure></p>
+<p>performance compare between sum &amp; parallel-sum<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sum.core=&gt; (def numbers (into []  (range 0 10000000)))</span><br><span class="line">sum.core=&gt; (time (sum numbers))</span><br><span class="line">&quot;Elapsed time: 1099.154 msecs&quot;</span><br><span class="line">49999995000000</span><br><span class="line">sum.core=&gt; (time (sum numbers))</span><br><span class="line">&quot;Elapsed time: 125.349 msecs&quot;</span><br><span class="line">49999995000000</span><br><span class="line">sum.core=&gt; (time (parallel-sum numbers))</span><br><span class="line">&quot;Elapsed time: 236.609 msecs&quot;</span><br><span class="line">49999995000000</span><br><span class="line">sum.core=&gt; (time (parallel-sum numbers))</span><br><span class="line">&quot;Elapsed time: 49.835 msecs&quot;</span><br><span class="line">49999995000000</span><br></pre></td></tr></table></figure></p>
+<p>As is often the case with code on JVM, we have to run more than once to give the JIT optimizer a chance to kick in and get a representative time.</p>
+<h5 id="Counting-Words-Functionally-sequential-version"><a href="#Counting-Words-Functionally-sequential-version" class="headerlink" title="Counting Words Functionally - sequential version"></a>Counting Words Functionally - sequential version</h5><p><strong>Map basis</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def counts &#123;&quot;apple&quot; 2 &quot;orange&quot; 1&#125;)</span><br><span class="line">#&apos;user/counts</span><br><span class="line">user=&gt; (get counts &quot;apple&quot; 0)</span><br><span class="line">2</span><br><span class="line">user=&gt; (get counts &quot;banana&quot; 0)           &lt;-- get simply looks up a key in the map and either returns its value or returns a default</span><br><span class="line">0</span><br><span class="line">user=&gt; (assoc counts &quot;banana&quot; 1)</span><br><span class="line">&#123;&quot;banana&quot; 1, &quot;orange&quot; 1, &quot;apple&quot; 2&#125;</span><br><span class="line">user=&gt; (assoc counts &quot;apple&quot; 3)</span><br><span class="line">&#123;&quot;orange&quot; 1, &quot;apple&quot; 3&#125;                  &lt;-- assoc takes a map with a key/value and returns a NEW map with the key mapped to the value.</span><br></pre></td></tr></table></figure></p>
+<p><strong>Frequency</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(defn word-frequencies [words]</span><br><span class="line">    (reduce</span><br><span class="line">        (fn [counts word] (assoc counts word (inc (get counts word 0))))           &lt;-- for each word, update frequency from counts and make a new map</span><br><span class="line">        &#123;&#125; words))                                                                 &lt;-- init value = &#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>And actually clojure has a standard lib called frequencies(), does the exactly same thing.</p>
+<p><strong>get words</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(defn get-words [text] (re-seq #&quot;\w+&quot; text))</span><br></pre></td></tr></table></figure></p>
+<p><strong>map &amp;&amp; mapcat</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (map get-words [&quot;one two three&quot; &quot;four five six&quot; &quot;seven eight nine&quot;])</span><br><span class="line">((&quot;one&quot; &quot;two&quot; &quot;three&quot;) (&quot;four&quot; &quot;five&quot; &quot;six&quot;) (&quot;seven&quot; &quot;eight&quot; &quot;nine&quot;))</span><br><span class="line"></span><br><span class="line">user=&gt; (mapcat get-words [&quot;one two three&quot; &quot;four five six&quot; &quot;seven eight nine&quot;])</span><br><span class="line">(&quot;one&quot; &quot;two&quot; &quot;three&quot; &quot;four&quot; &quot;five&quot; &quot;six&quot; &quot;seven&quot; &quot;eight&quot; &quot;nine&quot;)</span><br></pre></td></tr></table></figure></p>
+<p><strong>finally, sequential counting function</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(defn count-words-sequential [pages]</span><br><span class="line">    (frequencies (mapcat get-words pages)))</span><br></pre></td></tr></table></figure></p>
+<p>There might be a problem: If pages are huge, since count-words starts by collating words into a huge sequence, maybe end up running out of memory.</p>
+<p>As long as the pages variables (returned by get_pages(), which is not covered in this doc) is LAZY, there will be no problem.</p>
+<h5 id="Counting-Words-Functionally-parallel-version"><a href="#Counting-Words-Functionally-parallel-version" class="headerlink" title="Counting Words Functionally - parallel version"></a>Counting Words Functionally - parallel version</h5><p><strong>count pages in parallel</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(pmap #(frequencies (get-words %)) pages)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>pmap function is applied in parallel and semi-lazy, in that the parallel computation stays ahead of the consumption, but it won’t realize result unless required.</li>
+<li>#(…) reader macro is short for an anonymous function. Arguments are specified with %1, %2, …, and % if it takes only a single argument</li>
+</ol>
+<p><strong>merge maps with specific merge function</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def merge-counts (partial merge-with +))</span><br><span class="line">#&apos;user/merge-counts</span><br><span class="line">user=&gt; (merge-counts &#123;:x 1 :y 2&#125; &#123;:y 1 :z 1&#125;)</span><br><span class="line">&#123;:z 1, :y 3, :x 1&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>put them together</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(defn count-words-parallel [pages]</span><br><span class="line">    (reduce (partial merge-with +)</span><br><span class="line">        (pmap #(frequencies (get-words %)) pages)))</span><br></pre></td></tr></table></figure>
+<p><strong>performance</strong></p>
+<p>The sequential version takes 140 seconds to count 100,000 pages while the parallel version takes 94 s – a 1.5x speedup. Not very Ideal, why ?</p>
+<p>We’re counting and merging on a page-by-page basis, which results in a large number of merges. We can reduce those merges by counting batches of pages instead of a single page at a time.</p>
+<h5 id="Counting-Words-Functionally-batch-parallel-version"><a href="#Counting-Words-Functionally-batch-parallel-version" class="headerlink" title="Counting Words Functionally - batch parallel version"></a>Counting Words Functionally - batch parallel version</h5><p><strong>100 pages at a time</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(defn count-words [pages]</span><br><span class="line">    (reduce (partial merge-with +)</span><br><span class="line">        (pmap count-words-sequential (partition-all 100 pages))))</span><br></pre></td></tr></table></figure>
+<p>This version counts the same 100,000 pages in forty-four seconds – a 3.2x speedup. Perfect!</p>
+<h5 id="Fold"><a href="#Fold" class="headerlink" title="Fold"></a>Fold</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(defn parallel-frequencies [coll]</span><br><span class="line">    (r/fold</span><br><span class="line">        (partial merge-with +)</span><br><span class="line">        (fn [counts x] (assoc counts x (inc (get counts x 0))))</span><br><span class="line">        coll))</span><br></pre></td></tr></table></figure>
+<ol>
+<li>fold - divide and conquer</li>
+<li>1st func is the combine function</li>
+<li>2nd func is the reduce function</li>
+<li>Above function doesn’t work for word count problem, coz no way to perform binary chop on a lazy sequence (pages)</li>
+</ol>
+<h5 id="Same-Structure-Different-Evaluation-Order"><a href="#Same-Structure-Different-Evaluation-Order" class="headerlink" title="Same Structure, Different Evaluation Order"></a>Same Structure, Different Evaluation Order</h5><p>That is why functional programming allows us to parallelize code so easily.</p>
+<p>The following code snippets all perform the same calculation, return the same result, but they execute in very different orders.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1.  (reduce + (map (partial * 2) (range 10000)))</span><br><span class="line"></span><br><span class="line">2.  (reduce + (doall (map (partial * 2) (range 10000))))</span><br><span class="line"></span><br><span class="line">3.  (reduce + (pmap (partial * 2) (range 10000)))</span><br><span class="line"></span><br><span class="line">4.  (reduce + (r/map (partial * 2) (range 10000)))</span><br><span class="line"></span><br><span class="line">5.  (r/fold + (r/map (partial * 2) (into [] (range 10000))))</span><br></pre></td></tr></table></figure>
+<ol>
+<li>lazy sequence, map &amp; reduce sequentially</li>
+<li>doall forces a lazy sequence to fully realized, then reduce on it</li>
+<li>reduces a semi-lazy sequence, which is generated in parallel</li>
+<li>reduce a single lazy sequence with reduce function constructed by + &amp; (partial*2)</li>
+<li>into force to realize a full sequence, and then reduce in parallel by r/fold which creates a tree of reduce and combine ops</li>
+</ol>
+<h3 id="Future-amp-amp-Promise"><a href="#Future-amp-amp-Promise" class="headerlink" title="Future &amp;&amp; Promise"></a>Future &amp;&amp; Promise</h3><h5 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h5><p>A future takes a body of code and executes it <strong>in another thread</strong>. Its return value is a future object</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def sum (future (+ 1 2 3 4 5)))</span><br><span class="line">user=&gt; sum</span><br><span class="line">#&lt;core$future_call$reify__6110@5d4ee7d0: 15&gt;</span><br></pre></td></tr></table></figure>
+<p>We can retrieve the value of a future by dereferencing it with either deref or the shorthand @:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (deref sum)</span><br><span class="line">15</span><br><span class="line">user=&gt; @sum</span><br><span class="line">15</span><br></pre></td></tr></table></figure>
+<p>Dereferencing a future will block until the value is available (or realized).</p>
+<p>A promise is similar to a future in that it’s a value that’s realized asynchronously and accessed with deref or @, which will block until it’s realized. The difference is that creating a promise does not cause any code to run, instead its value is set with deliver.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def meaning-of-life (promise))</span><br><span class="line">user=&gt; (future (println &quot;The meaning of life is:&quot; @meaning-of-life))</span><br><span class="line">#&lt;core$future_call$reify__6110@224e59d9: :pending&gt;</span><br><span class="line">user=&gt; (deliver meaning-of-life 42)</span><br><span class="line">#&lt;core$promise$reify__6153@52c9f3c7: 42&gt;</span><br><span class="line">The meaning of life is: 42</span><br></pre></td></tr></table></figure>
+<h5 id="Service-with-Future-amp-Promise"><a href="#Service-with-Future-amp-Promise" class="headerlink" title="Service with Future &amp; Promise"></a>Service with Future &amp; Promise</h5><p>To create a service that accepts data labled by id number, and processes the data sequentially.</p>
+<p>Problem is that the data don’t arrive at server sequentially.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(def snippets (repeatedly promise))</span><br><span class="line"></span><br><span class="line">(defn accept-snippet [n text]</span><br><span class="line">    (deliver (nth snippets n) text))</span><br><span class="line"></span><br><span class="line">(future</span><br><span class="line">    (doseq [snippet (map deref snippets)]</span><br><span class="line">        (println snippet)))</span><br></pre></td></tr></table></figure>
+<p>This uses doseq, which processes a sequence sequentially. In this case, the sequence it’s processing is a lazy sequence of dereferenced promises, each one of which is bound to snippet.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/并发/" rel="tag">#并发</a>
+          
+            <a href="/tags/7日7并发模型/" rel="tag">#7日7并发模型</a>
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/FP/" rel="tag">#FP</a>
+          
+            <a href="/tags/Clojure/" rel="tag">#Clojure</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part3/" rel="next" title="7周7并发模型 P3 - Seperate Identity from State in Clojure Way">
+                <i class="fa fa-chevron-left"></i> 7周7并发模型 P3 - Seperate Identity from State in Clojure Way
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part1/" rel="prev" title="7周7并发模型 P1 - Thread and Lock">
+                7周7并发模型 P1 - Thread and Lock <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part2/"
+           data-title="7周7并发模型 P2 - FP with Clojure" data-url="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part2/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Perils-of-Mutable-State"><span class="nav-number">1.</span> <span class="nav-text">The Perils of Mutable State</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallelism-with-Clojure"><span class="nav-number">2.</span> <span class="nav-text">Parallelism with Clojure</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#different-version-of-sum"><span class="nav-number">2.0.1.</span> <span class="nav-text">different version of sum</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Counting-Words-Functionally-sequential-version"><span class="nav-number">2.0.2.</span> <span class="nav-text">Counting Words Functionally - sequential version</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Counting-Words-Functionally-parallel-version"><span class="nav-number">2.0.3.</span> <span class="nav-text">Counting Words Functionally - parallel version</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Counting-Words-Functionally-batch-parallel-version"><span class="nav-number">2.0.4.</span> <span class="nav-text">Counting Words Functionally - batch parallel version</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Fold"><span class="nav-number">2.0.5.</span> <span class="nav-text">Fold</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Same-Structure-Different-Evaluation-Order"><span class="nav-number">2.0.6.</span> <span class="nav-text">Same Structure, Different Evaluation Order</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Future-amp-amp-Promise"><span class="nav-number">3.</span> <span class="nav-text">Future && Promise</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Definition"><span class="nav-number">3.0.1.</span> <span class="nav-text">Definition</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Service-with-Future-amp-Promise"><span class="nav-number">3.0.2.</span> <span class="nav-text">Service with Future & Promise</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

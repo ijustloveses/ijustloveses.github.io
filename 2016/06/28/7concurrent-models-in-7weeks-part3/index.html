@@ -1,0 +1,763 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="并发,7日7并发模型,笔记,Clojure," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 3. Seperate Identity from State in Clojure Way">
+<meta property="og:type" content="article">
+<meta property="og:title" content="7周7并发模型 P3 - Seperate Identity from State in Clojure Way">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part3/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 3. Seperate Identity from State in Clojure Way">
+<meta property="og:updated_time" content="2016-06-29T06:21:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="7周7并发模型 P3 - Seperate Identity from State in Clojure Way">
+<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 3. Seperate Identity from State in Clojure Way">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> 7周7并发模型 P3 - Seperate Identity from State in Clojure Way | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                7周7并发模型 P3 - Seperate Identity from State in Clojure Way
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-28T18:27:25+00:00" content="2016-06-29">
+              2016-06-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/28/7concurrent-models-in-7weeks-part3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Notes on 7 Concurrent Models in 7 Weeks - Part 3. Seperate Identity from State in Clojure Way</p>
+<a id="more"></a>
+<h3 id="Atoms-and-Persistent-Data-Structures"><a href="#Atoms-and-Persistent-Data-Structures" class="headerlink" title="Atoms and Persistent Data Structures"></a>Atoms and Persistent Data Structures</h3><p>A pure functional language provides no support for mutable data whatsoever. Clojure, by contrast, provides a number of different types of concurrency-aware mutable variables. Clojure’s mutable variables allow us to handle real-world side effects while<br>remaining safe and consistent.</p>
+<h5 id="Atom-Intro"><a href="#Atom-Intro" class="headerlink" title="Atom Intro"></a>Atom Intro</h5><p>An atom is an atomic variable, which is built on top of java.util.concurrent.atomic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def my-atom (atom 42))</span><br><span class="line">#&apos;user/my-atom</span><br><span class="line">user=&gt; (deref my-atom)</span><br><span class="line">42</span><br><span class="line">user=&gt; @my-atom</span><br><span class="line">42</span><br><span class="line"></span><br><span class="line">user=&gt; (swap! my-atom inc)</span><br><span class="line">43</span><br><span class="line">user=&gt; @my-atom</span><br><span class="line">43</span><br><span class="line">user=&gt; (swap! my-atom + 2)     ---&gt;  + my-atom 2</span><br><span class="line">45</span><br><span class="line"></span><br><span class="line">user=&gt; (reset! my-atom 0)</span><br><span class="line">0</span><br><span class="line">user=&gt; @my-atom</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">user=&gt; (def session (atom &#123;&#125;))</span><br><span class="line">#&apos;user/session</span><br><span class="line">user=&gt; (swap! session assoc :username &quot;paul&quot;)</span><br><span class="line">&#123;:username &quot;paul&quot;&#125;</span><br><span class="line">user=&gt; (swap! session assoc :session-id 1234)</span><br><span class="line">&#123;:session-id 1234, :username &quot;paul&quot;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="A-Multithreaded-Web-Service-with-Mutable-State"><a href="#A-Multithreaded-Web-Service-with-Mutable-State" class="headerlink" title="A Multithreaded Web Service with Mutable State"></a>A Multithreaded Web Service with Mutable State</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(def players (atom ()))</span><br><span class="line"></span><br><span class="line">(defn list-players []</span><br><span class="line">	(response (json/encode @players)))</span><br><span class="line"></span><br><span class="line">(defn create-player [player-name]</span><br><span class="line">	(swap! players conj player-name)</span><br><span class="line">	(status (response &quot;&quot;) 201))</span><br><span class="line"></span><br><span class="line">(defroutes app-routes</span><br><span class="line">    (GET &quot;/players&quot; [] (list-players))</span><br><span class="line">    (PUT &quot;/players/:player-name&quot; [player-name] (create-player player-name)))</span><br><span class="line"></span><br><span class="line">(defn -main [&amp; args]</span><br><span class="line">    (run-jetty (site app-routes) &#123;:port 3000&#125;))</span><br></pre></td></tr></table></figure>
+<p>The embedded Jetty server is multithreaded, so our code will need to be thread-safe.</p>
+<p>What happens if one thread adds an entry to the players list while another is iterating over it?</p>
+<p>This code is thread-safe because all of Clojure’s data structures and collections are persistent, ectors, maps, and sets …</p>
+<p><strong>They makes use of structure sharing, makes use of part of the original, and try to avoid copying when necessary</strong></p>
+<p>They provide similar performance bounds to their nonpersistent equivalents in languages like Ruby and Java.</p>
+<p>Once a thread has a reference to a data structure, it will see no changes made by any other thread. (works just like Copy On Write)</p>
+<p>Persistent data structures separate identity from state.</p>
+<h5 id="Retries"><a href="#Retries" class="headerlink" title="Retries"></a>Retries</h5><p>Atoms can be lockless, internally they make use of the compareAndSet() method in java.util.concurrent.AtomicReference, fast and don’t block.</p>
+<p>swap! needs to handle the case where the atom has been changed by another thread in between it generating a new value and trying to change that value.</p>
+<p>If that case happens, swap! will retry, discard the value returned by the function and call it again with the atom’s new value.</p>
+<p>We saw something very similar to this already when using ConcurrentHashMap</p>
+<h5 id="validators"><a href="#validators" class="headerlink" title="validators"></a>validators</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def non-negative (atom 0 :validator #(&gt;= % 0)))</span><br><span class="line">#&apos;user/non-negative</span><br><span class="line">user=&gt; (reset! non-negative 42)</span><br><span class="line">42</span><br><span class="line">user=&gt; (reset! non-negative -1)</span><br><span class="line">IllegalStateException Invalid reference state</span><br></pre></td></tr></table></figure>
+<p>A validator is a function that’s called whenever an attempt is made to change the value of the atom.</p>
+<p>The validator is called before the value of the atom has been changed and, just like the function that’s passed to swap!,</p>
+<p>it might be called more than once if swap! retries. Therefore, validators also must not have any side effects.</p>
+<h5 id="Watchers"><a href="#Watchers" class="headerlink" title="Watchers"></a>Watchers</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def a (atom 0))</span><br><span class="line">#&apos;user/a</span><br><span class="line">user=&gt; (add-watch a :print #(println &quot;Changed from &quot; %3 &quot; to &quot; %4))</span><br><span class="line">#&lt;Atom@542ab4b1: 0&gt;</span><br><span class="line">user=&gt; (swap! a + 2)</span><br><span class="line">Changed from 0 to 2</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<p>A watcher is added by providing both a key and a watch function. The key is used to identify the watcher (to delete etc …). </p>
+<p>The watch function is called whenever the value of the atom changes. </p>
+<p>It is given four arguments — the key that was given to add-watch, a reference to the atom, the previous value, and the new value.</p>
+<p>Watch functions are called after the value has changed and will only be called once, no matter how often swap! retries. So side effect is allowed.</p>
+<p>When the watch function is called, the atom’s value may already have changed again, so watch functions should always use the values passed as arguments and never dereference the atom.</p>
+<h5 id="hybrid-web-server-example"><a href="#hybrid-web-server-example" class="headerlink" title="hybrid web server example"></a>hybrid web server example</h5><p><strong>session id</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(def last-session-id (atom 0))</span><br><span class="line"></span><br><span class="line">(defn next-session-id []</span><br><span class="line">    (swap! last-session-id inc))</span><br></pre></td></tr></table></figure>
+<p><strong>session, renew</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(def sessions (atom &#123;&#125;))</span><br><span class="line"></span><br><span class="line">(defn now []</span><br><span class="line">    (System/currentTimeMillis))</span><br><span class="line"></span><br><span class="line">(defn new-session [initial]           &lt;-- it is a hash map</span><br><span class="line">    (let [session-id (next-session-id)</span><br><span class="line">          session (assoc initial :last-referenced (atom (now)))]</span><br><span class="line">    (swap! sessions assoc session-id session)</span><br><span class="line">    session-id))                     &lt;-- return </span><br><span class="line"></span><br><span class="line">(defn get-session [id]</span><br><span class="line">    (let [session (@sessions id)]</span><br><span class="line">        (reset! (:last-referenced session) (now))    &lt;-- renew</span><br><span class="line">        session))                    &lt;-- return</span><br></pre></td></tr></table></figure>
+<p><strong>session expire scheduler</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(defn session-expiry-time []</span><br><span class="line">    (- (now) (* 10 60 1000)))</span><br><span class="line"></span><br><span class="line">(defn expired? [session]</span><br><span class="line">    (&lt; @(:last-referenced session) (session-expiry-time)))</span><br><span class="line"></span><br><span class="line">(defn sweep-sessions []</span><br><span class="line">    (swap! sessions #(remove-vals % expired?)))</span><br><span class="line"></span><br><span class="line">(def session-sweeper</span><br><span class="line">    (schedule &#123;:min (range 0 60 5)&#125; sweep-sessions))</span><br></pre></td></tr></table></figure>
+<p><strong>put snippet into session</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(defn create-session []</span><br><span class="line">    (let [snippets (repeatedly promise)</span><br><span class="line">          translations (delay (map translate</span><br><span class="line">                                   (strings-&gt;sentences (map deref snippets))))]</span><br><span class="line">        (new-session &#123;:snippets snippets :translations translations&#125;)))          &lt;-- snippets and transactions in session</span><br></pre></td></tr></table></figure>
+<p>Still using an infinite lazy sequence of promises to represent incoming snippets and a map over snippets to represent translations</p>
+<p>But these are now both stored in a session, together with the :last-referenced</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(defn accept-snippet [session n text]</span><br><span class="line">    (deliver (nth (:snippets session) n) text))</span><br><span class="line"></span><br><span class="line">(defn get-translation [session n]</span><br><span class="line">    @(nth @(:translations session) n))</span><br></pre></td></tr></table></figure>
+<h3 id="gents"><a href="#gents" class="headerlink" title="gents"></a>gents</h3><h5 id="Agents-Intro"><a href="#Agents-Intro" class="headerlink" title="Agents Intro"></a>Agents Intro</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def my-agent (agent 0))</span><br><span class="line">#&apos;user/my-agent</span><br><span class="line">user=&gt; @my-agent</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">user=&gt; (send my-agent inc)</span><br><span class="line">#&lt;Agent@2cadd45e: 1&gt;</span><br><span class="line">user=&gt; @my-agent</span><br><span class="line">1</span><br><span class="line">user=&gt; (send my-agent + 2)</span><br><span class="line">#&lt;Agent@2cadd45e: 1&gt;              &lt;-- still 1, return before agent has been changed by the asynchronous func</span><br><span class="line">user=&gt; @my-agent</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>send() returns immediately (before the value of the agent has been changed), the function passed to send is called sometime afterward.</p>
+<p>If multiple threads call send concurrently, execution of the functions passed to send is serialized: only one will execute at a time. </p>
+<p>This means that they will not be retried and can therefore contain side effects.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def my-agent (agent 0))</span><br><span class="line">#&apos;user/my-agent</span><br><span class="line">user=&gt; (send my-agent #((Thread/sleep 2000) (inc %)))</span><br><span class="line">#&lt;Agent@224e59d9: 0&gt;</span><br><span class="line">user=&gt; @my-agent</span><br><span class="line">0</span><br><span class="line">user=&gt; (await my-agent)   &lt;-- use await(), which blocks until all actions dispatched from the current thread to the given agent(s) have completed</span><br><span class="line">nil</span><br><span class="line">user=&gt; @my-agent</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<h5 id="Error-Handling"><a href="#Error-Handling" class="headerlink" title="Error Handling"></a>Error Handling</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def non-negative (agent 1 :validator (fn [new-val] (&gt;= new-val 0))))</span><br><span class="line">#&apos;user/non-negative</span><br><span class="line">user=&gt; (send non-negative dec)</span><br><span class="line">#&lt;Agent@6257d812: 0&gt;</span><br><span class="line">user=&gt; @non-negative</span><br><span class="line">0</span><br><span class="line">user=&gt; (send non-negative dec)</span><br><span class="line">#&lt;Agent@6257d812: 0&gt;</span><br><span class="line">user=&gt; @non-negative</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+<p>As we hoped, the value won’t go negative. But what happens if we try to use an agent after it’s experienced an error?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (send non-negative inc)</span><br><span class="line">IllegalStateException Invalid reference state clojure.lang.ARef.validate…</span><br><span class="line">user=&gt; @non-negative</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+<p>Once an agent experiences an error, it enters a failed state by default, and attempts to dispatch new actions fail. </p>
+<p>We can find out if an agent is failed (and if it is, why) with agent-error, and we can restart it with restart-agent:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (agent-error non-negative)</span><br><span class="line">#&lt;IllegalStateException java.lang.IllegalStateException: Invalid reference state&gt;</span><br><span class="line">user=&gt; (restart-agent non-negative 0)</span><br><span class="line">0</span><br><span class="line">user=&gt; (agent-error non-negative)</span><br><span class="line">nil</span><br><span class="line">user=&gt; (send non-negative inc)</span><br><span class="line">#&lt;Agent@6257d812: 1&gt;</span><br><span class="line">user=&gt; @non-negative</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p>By default, agents are created with the :fail error mode. </p>
+<p>Alternatively, you can set the error mode to :continue, in which case you don’t need to call restart-agent to recover an agent.</p>
+<p>The :continue error mode is the default if you set an error handler which is automatically called whenever the agent experiences an error.</p>
+<h5 id="Example-An-In-Memory-Log"><a href="#Example-An-In-Memory-Log" class="headerlink" title="Example: An In-Memory Log"></a>Example: An In-Memory Log</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(def log-entries (agent []))</span><br><span class="line">(defn log [entry]</span><br><span class="line">    (send log-entries conj [(now) entry]))</span><br></pre></td></tr></table></figure>
+<h3 id="Ref-Software-Transactional-Memory"><a href="#Ref-Software-Transactional-Memory" class="headerlink" title="Ref - Software Transactional Memory"></a>Ref - Software Transactional Memory</h3><h5 id="Ref-Intro"><a href="#Ref-Intro" class="headerlink" title="Ref Intro"></a>Ref Intro</h5><p>Refs are more sophisticated than atoms and agents, providing software transactional memory (STM). </p>
+<p>STM allows us to make concurrent, coordinated changes to multiple variables, much like a database’s transaction.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (def my-ref (ref 0))</span><br><span class="line">#&apos;user/my-ref</span><br><span class="line">user=&gt; @my-ref</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">user=&gt; (ref-set my-ref 42)</span><br><span class="line">IllegalStateException No transaction running       &lt;-- Modifying the value of a ref is possible only inside a transaction.</span><br><span class="line">user=&gt; (alter my-ref inc)</span><br><span class="line">IllegalStateException No transaction running</span><br></pre></td></tr></table></figure>
+<p>STM transactions are atomic, consistent, and isolated:</p>
+<ul>
+<li>Atomic: Either all of the side effects of a transaction take place, or none of them do.</li>
+<li>Consistent: Transactions guarantee preservation of invariants specified through validators.<br>  If any of the changes attempted by a transaction fail to validate, none of the changes will be made.</li>
+<li>Isolated: multiple transactions can execute concurrently, the effect of concurrent transactions will be the same as they are running sequentially.</li>
+</ul>
+<p>The missing property is durability, STM data will not survive power loss or crashes.</p>
+<p>A transaction is created with dosync</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">user=&gt; (dosync (ref-set my-ref 42))</span><br><span class="line">42</span><br><span class="line">user=&gt; @my-ref</span><br><span class="line">42</span><br><span class="line">user=&gt; (dosync (alter my-ref inc))</span><br><span class="line">43</span><br><span class="line">user=&gt; @my-ref</span><br><span class="line">43</span><br></pre></td></tr></table></figure>
+<h5 id="Example-Retry-Transactions"><a href="#Example-Retry-Transactions" class="headerlink" title="Example - Retry Transactions"></a>Example - Retry Transactions</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(def attempts (atom 0))       &lt;-- atom</span><br><span class="line">(def transfers (agent 0))     &lt;-- agent</span><br><span class="line"></span><br><span class="line">(defn transfer [from to amount]</span><br><span class="line">    (dosync</span><br><span class="line">        (swap! attempts inc)   // Side-effect in transaction - DON&apos;T DO THIS</span><br><span class="line">        (send transfers inc)</span><br><span class="line">        (alter from - amount)</span><br><span class="line">        (alter to + amount)))</span><br></pre></td></tr></table></figure>
+<p>stress-tests</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">(def checking (ref 10000))</span><br><span class="line">(def savings (ref 20000))</span><br><span class="line"></span><br><span class="line">(defn stress-thread [from to iterations amount]</span><br><span class="line">    (Thread. #(dotimes [_ iterations] (transfer from to amount))))</span><br><span class="line"></span><br><span class="line">(defn -main [&amp; args]</span><br><span class="line">    (println &quot;Before: Checking =&quot; @checking &quot; Savings =&quot; @savings)</span><br><span class="line">    (let [t1 (stress-thread checking savings 100 100)</span><br><span class="line">          t2 (stress-thread savings checking 200 100)]</span><br><span class="line">        (.start t1)</span><br><span class="line">        (.start t2)</span><br><span class="line">        (.join t1)</span><br><span class="line">        (.join t2))</span><br><span class="line">    (await transfers)</span><br><span class="line">    (println &quot;Attempts: &quot; @attempts)</span><br><span class="line">    (println &quot;Transfers: &quot; @transfers)</span><br><span class="line">    (println &quot;After: Checking =&quot; @checking &quot; Savings =&quot; @savings))</span><br></pre></td></tr></table></figure>
+<p>result:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Before: Checking = 10000 Savings = 20000</span><br><span class="line">Attempts: 638      --- side effect, break the idea of transaction, a big change that it will change when running the stress-test again</span><br><span class="line">Transfers: 300     --- 638 - 300 = 338 retires happened</span><br><span class="line">After: Checking = 20000 Savings = 10000</span><br></pre></td></tr></table></figure>
+<p>Good news: agents are transaction-aware.</p>
+<p>If you use send to modify an agent within a transaction, that send will take place only if the transaction succeeds.</p>
+<p>Clojure uses an exclamation mark to indicate that functions like swap! and reset! are not transaction-safe. </p>
+<p>We can safely update an agent within a transaction because the function that updates an agent’s value is send instead of send!.</p>
+<h5 id="Atoms-Agents-and-Refs"><a href="#Atoms-Agents-and-Refs" class="headerlink" title="Atoms, Agents and Refs"></a>Atoms, Agents and Refs</h5><p>An atom allows you to make synchronous changes to a single value, synchronous because when swap! returns, the update has taken place. </p>
+<p>Updates to one atom are not coordinated with other updates.</p>
+<p>An agent allows you to make asynchronous changes to a single value, asynchronous because the update takes place after send returns. </p>
+<p>Updates to one agent are not coordinated with other updates.</p>
+<p>Refs allow you to make synchronous, coordinated changes to multiple values.</p>
+<h3 id="In-Depth-Dining-Philosophers-Problem"><a href="#In-Depth-Dining-Philosophers-Problem" class="headerlink" title="In Depth - Dining Philosophers Problem"></a>In Depth - Dining Philosophers Problem</h3><h5 id="Dining-Philosophers-with-STM"><a href="#Dining-Philosophers-with-STM" class="headerlink" title="Dining Philosophers with STM"></a>Dining Philosophers with STM</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(def philosophers (into [] (repeatedly 5 #(ref :thinking))))         &lt;-- a ref per philosopher</span><br><span class="line"></span><br><span class="line">(defn think []</span><br><span class="line">    (Thread/sleep (rand 1000)))</span><br><span class="line">(defn eat []</span><br><span class="line">    (Thread/sleep (rand 1000)))</span><br><span class="line"></span><br><span class="line">(defn philosopher-thread [n]</span><br><span class="line">    (Thread.</span><br><span class="line">        #(let [philosopher (philosophers n)</span><br><span class="line">               left (philosophers (mod (- n 1) 5))</span><br><span class="line">               right (philosophers (mod (+ n 1) 5))]</span><br><span class="line">        (while true</span><br><span class="line">            (think)</span><br><span class="line">            (when (claim-chopsticks philosopher left right)</span><br><span class="line">                (eat)</span><br><span class="line">                (release-chopsticks philosopher))))))</span><br><span class="line"></span><br><span class="line">(defn -main [&amp; args]</span><br><span class="line">    (let [threads (map philosopher-thread (range 5))]</span><br><span class="line">        (doseq [thread threads] (.start thread))</span><br><span class="line">        (doseq [thread threads] (.join thread))))</span><br><span class="line"></span><br><span class="line">(defn release-chopsticks [philosopher]</span><br><span class="line">    (dosync (ref-set philosopher :thinking)))</span><br></pre></td></tr></table></figure>
+<p><strong>A First Attempt</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(defn claim-chopsticks [philosopher left right]</span><br><span class="line">    (dosync</span><br><span class="line">        (when (and (= @left :thinking) (= @right :thinking))</span><br><span class="line">            (ref-set philosopher :eating))))</span><br></pre></td></tr></table></figure>
+<p>This solution is wrong, and the problem is that we’re accessing the values of left and right with @.</p>
+<p>STM guarantees that no two transactions will make inconsistent modifications to the same ref, but we’re not modifying left or right, just examining their values.</p>
+<p>So, some other transaction could modify them, invalidating the condition that adjacent philosophers can’t eat simultaneously.</p>
+<p><strong>Ensuring ref doesn’t change in STM</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(defn claim-chopsticks [philosopher left right]</span><br><span class="line">    (dosync</span><br><span class="line">        (when (and (= (ensure left) :thinking) (= (ensure right) :thinking))</span><br><span class="line">            (ref-set philosopher :eating))))</span><br></pre></td></tr></table></figure>
+<p>ensure ensures that the value of the ref it returns won’t be changed by another transaction. </p>
+<p>It is significantly simpler than lock-based solution, and it’s impossible to deadlock coz it is lockless.</p>
+<h5 id="Dining-Philosophers-Without-STM"><a href="#Dining-Philosophers-Without-STM" class="headerlink" title="Dining Philosophers Without STM"></a>Dining Philosophers Without STM</h5><p>Previous section we represents each philosopher as a ref and using transactions to ensure that updates to those refs are coordinated.</p>
+<p>This section we use a single atom to represent the state of all the philosophers as below:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">(def philosophers (atom (into [] (repeat 5 :thinking))))</span><br><span class="line"></span><br><span class="line">(defn philosopher-thread [philosopher]</span><br><span class="line">    (Thread.</span><br><span class="line">        #(let [left (mod (- philosopher 1) 5)</span><br><span class="line">               right (mod (+ philosopher 1) 5)]</span><br><span class="line">        (while true</span><br><span class="line">            (think)</span><br><span class="line">            (when (claim-chopsticks! philosopher left right)</span><br><span class="line">                (eat)</span><br><span class="line">                (release-chopsticks! philosopher))))))</span><br><span class="line"></span><br><span class="line">(defn release-chopsticks! [philosopher]</span><br><span class="line">    (swap! philosophers assoc philosopher :thinking))        &lt;-- assoc use be apply to array too</span><br></pre></td></tr></table></figure>
+<p>The most interesting function to implement is chaim-chopsticks!</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(defn claim-chopsticks! [philosopher left right]</span><br><span class="line">    (swap! philosophers</span><br><span class="line">        (fn [ps]</span><br><span class="line">            (if (and (= (ps left) :thinking) (= (ps right) :thinking))</span><br><span class="line">                (assoc ps philosopher :eating)</span><br><span class="line">                ps)))</span><br><span class="line">    (= (@philosophers philosopher) :eating))</span><br></pre></td></tr></table></figure>
+<p>Works but not elegant. Can we avoid the check after calling swap! to see if the chopsticks are claimed?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(defn claim-chopsticks! [philosopher left right]</span><br><span class="line">    (swap-when! philosophers</span><br><span class="line">        #(and (= (%1 left) :thinking) (= (%1 right) :thinking))</span><br><span class="line">        assoc philosopher :eating))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(defn swap-when!</span><br><span class="line">    &quot;If (pred current-value-of-atom) is true, atomically swaps the value</span><br><span class="line">    of the atom to become (apply f current-value-of-atom args). Note that</span><br><span class="line">    both pred and f may be called multiple times and thus should be free</span><br><span class="line">    of side effects. Returns the value that was swapped in if the</span><br><span class="line">    predicate was true, nil otherwise.&quot;</span><br><span class="line">    [a pred f &amp; args]      &lt;-- arr, predictor and arguments (&amp; means any number of arguments)</span><br><span class="line">    (loop []</span><br><span class="line">        (let [old @a]</span><br><span class="line">            (if (pred old)</span><br><span class="line">                (let [new (apply f old args)]</span><br><span class="line">                    (if (compare-and-set! a old new)</span><br><span class="line">                        new</span><br><span class="line">                        (recur)))    &lt;-- if compare-and-set! fails, recur to loop back</span><br><span class="line">                nil))))</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/并发/" rel="tag">#并发</a>
+          
+            <a href="/tags/7日7并发模型/" rel="tag">#7日7并发模型</a>
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/Clojure/" rel="tag">#Clojure</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part4/" rel="next" title="7周7并发模型 P4 - Actors with Elixir">
+                <i class="fa fa-chevron-left"></i> 7周7并发模型 P4 - Actors with Elixir
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part2/" rel="prev" title="7周7并发模型 P2 - FP with Clojure">
+                7周7并发模型 P2 - FP with Clojure <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part3/"
+           data-title="7周7并发模型 P3 - Seperate Identity from State in Clojure Way" data-url="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part3/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Atoms-and-Persistent-Data-Structures"><span class="nav-number">1.</span> <span class="nav-text">Atoms and Persistent Data Structures</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Atom-Intro"><span class="nav-number">1.0.1.</span> <span class="nav-text">Atom Intro</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#A-Multithreaded-Web-Service-with-Mutable-State"><span class="nav-number">1.0.2.</span> <span class="nav-text">A Multithreaded Web Service with Mutable State</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Retries"><span class="nav-number">1.0.3.</span> <span class="nav-text">Retries</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#validators"><span class="nav-number">1.0.4.</span> <span class="nav-text">validators</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Watchers"><span class="nav-number">1.0.5.</span> <span class="nav-text">Watchers</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hybrid-web-server-example"><span class="nav-number">1.0.6.</span> <span class="nav-text">hybrid web server example</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gents"><span class="nav-number">2.</span> <span class="nav-text">gents</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Agents-Intro"><span class="nav-number">2.0.1.</span> <span class="nav-text">Agents Intro</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Error-Handling"><span class="nav-number">2.0.2.</span> <span class="nav-text">Error Handling</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Example-An-In-Memory-Log"><span class="nav-number">2.0.3.</span> <span class="nav-text">Example: An In-Memory Log</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ref-Software-Transactional-Memory"><span class="nav-number">3.</span> <span class="nav-text">Ref - Software Transactional Memory</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Ref-Intro"><span class="nav-number">3.0.1.</span> <span class="nav-text">Ref Intro</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Example-Retry-Transactions"><span class="nav-number">3.0.2.</span> <span class="nav-text">Example - Retry Transactions</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Atoms-Agents-and-Refs"><span class="nav-number">3.0.3.</span> <span class="nav-text">Atoms, Agents and Refs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#In-Depth-Dining-Philosophers-Problem"><span class="nav-number">4.</span> <span class="nav-text">In Depth - Dining Philosophers Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Dining-Philosophers-with-STM"><span class="nav-number">4.0.1.</span> <span class="nav-text">Dining Philosophers with STM</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dining-Philosophers-Without-STM"><span class="nav-number">4.0.2.</span> <span class="nav-text">Dining Philosophers Without STM</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

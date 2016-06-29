@@ -1,0 +1,760 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="并发,7日7并发模型,笔记,Actor,Elixir," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 4. Actors with Elixir">
+<meta property="og:type" content="article">
+<meta property="og:title" content="7周7并发模型 P4 - Actors with Elixir">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part4/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 4. Actors with Elixir">
+<meta property="og:updated_time" content="2016-06-29T06:22:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="7周7并发模型 P4 - Actors with Elixir">
+<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 4. Actors with Elixir">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> 7周7并发模型 P4 - Actors with Elixir | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                7周7并发模型 P4 - Actors with Elixir
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-28T18:27:25+00:00" content="2016-06-29">
+              2016-06-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/28/7concurrent-models-in-7weeks-part4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part4/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Notes on 7 Concurrent Models in 7 Weeks - Part 4. Actors with Elixir</p>
+<a id="more"></a>
+<p>Functional programming avoids the problems associated with shared mutable state by avoiding mutable state. </p>
+<p>Actor programming, by contrast, retains mutable state but avoids sharing it.</p>
+<p>An actor is like an object in an OO program, it encapsulates state and communicates with other actors by exchanging messages.</p>
+<h3 id="Basic-Messages-and-Mailboxes"><a href="#Basic-Messages-and-Mailboxes" class="headerlink" title="Basic: Messages and Mailboxes"></a>Basic: Messages and Mailboxes</h3><h5 id="First-Actor"><a href="#First-Actor" class="headerlink" title="First Actor"></a>First Actor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">defmodule Talker do</span><br><span class="line">    def loop do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:greet, name&#125; -&gt; IO.puts(&quot;Hello #&#123;name&#125;&quot;)</span><br><span class="line">            &#123;:celebrate, name, age&#125; -&gt; IO.puts(&quot;Here&apos;s to another #&#123;age&#125; years, #&#123;name&#125;&quot;)</span><br><span class="line">        end</span><br><span class="line">        loop                        --- Note: implements an infinite loop by calling itself recursively</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">pid = spawn(&amp;Talker.loop/0)</span><br><span class="line">send(pid, &#123;:greet, &quot;Huey&quot;&#125;)</span><br><span class="line">send(pid, &#123;:celebrate, &quot;Louie&quot;, 16&#125;)</span><br><span class="line">sleep(1000)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Messages are sent asynchronously. Instead of being sent directly to an actor, they are placed in a mailbox.</li>
+<li>This means that actors are decoupled, actors run at their own speed and don’t block when sending messages.</li>
+<li>An actor runs concurrently with other actors but handles messages sequentially, in the order they were added to the mailbox.</li>
+</ul>
+<p>Above sample uses sleeps(1000) for a second to allow messages to be processed before exiting. This is an unsatisfactory solution.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">defmodule Talker do</span><br><span class="line">    def loop do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:greet, name&#125; -&gt; IO.puts(&quot;Hello #&#123;name&#125;&quot;)</span><br><span class="line">            &#123;:celebrate, name, age&#125; -&gt; IO.puts(&quot;Here&apos;s to another #&#123;age&#125; years, #&#123;name&#125;&quot;)</span><br><span class="line">            &#123;:shutdown&#125; -&gt; exit(:normal)        --- Note: an explicit way to stop an actor when it finishes all the messages in its queue.</span><br><span class="line">        end                                               Remember, an actor will handle messages in its queue sequentially.</span><br><span class="line">       loop</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">Process.flag(:trap_exit, true)         --- Note: we’ll be notified when the spawned process terminates.</span><br><span class="line">pid = spawn_link(&amp;Talker.loop/0)                 The message that’s sent is a triple form &#123;:EXIT, pid, reason&#125;</span><br><span class="line"></span><br><span class="line">send(pid, &#123;:greet, &quot;Huey&quot;&#125;)</span><br><span class="line">send(pid, &#123;:praise, &quot;Dewey&quot;&#125;)</span><br><span class="line">send(pid, &#123;:celebrate, &quot;Louie&quot;, 16&#125;)</span><br><span class="line">send(pid, &#123;:shutdown&#125;)</span><br><span class="line"></span><br><span class="line">receive do</span><br><span class="line">    &#123;:EXIT, ^pid, reason&#125; -&gt; IO.puts(&quot;Talker has exited (#&#123;reason&#125;)&quot;)            --- Note: block here, until it receives exit message</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>The ^ (caret) in the receive pattern indicates that instead of binding the second element of the tuple to pid, we want to match a message where the second element has the value that’s already bound to pid.</p>
+<h5 id="Stateful-Actors"><a href="#Stateful-Actors" class="headerlink" title="Stateful Actors"></a>Stateful Actors</h5><p>We don’t need mutable variables to create a stateful actor, but in fact all we need is recursion.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">defmodule Counter do</span><br><span class="line">    def loop(count) do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:next&#125; -&gt;</span><br><span class="line">                IO.puts(&quot;Current count: #&#123;count&#125;&quot;)</span><br><span class="line">                loop(count + 1)                     --- Note: loop with count + 1</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">iex(1)&gt; counter = spawn(Counter, :loop, [1])        --- Note: initialize count to 1</span><br><span class="line">iex(2)&gt; send(counter, &#123;:next&#125;)</span><br><span class="line">Current count: 1</span><br><span class="line">iex(3)&gt; send(counter, &#123;:next&#125;)</span><br><span class="line">Current count: 2</span><br></pre></td></tr></table></figure>
+<h5 id="Hiding-Messages-Behind-an-API"><a href="#Hiding-Messages-Behind-an-API" class="headerlink" title="Hiding Messages Behind an API"></a>Hiding Messages Behind an API</h5><p>A common practice is to provide a set of API, and hide details behind the curtain</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">defmodule Counter do</span><br><span class="line">    def start(count) do</span><br><span class="line">        spawn(__MODULE__, :loop, [count])</span><br><span class="line">    end</span><br><span class="line">    def next(counter) do</span><br><span class="line">        send(counter, &#123;:next&#125;)</span><br><span class="line">    end</span><br><span class="line">    def loop(count) do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:next&#125; -&gt;</span><br><span class="line">                IO.puts(&quot;Current count: #&#123;count&#125;&quot;)</span><br><span class="line">                loop(count + 1)</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">iex(1)&gt; counter = Counter.start(42)</span><br><span class="line">#PID&lt;0.44.0&gt;</span><br><span class="line">iex(2)&gt; Counter.next(counter)</span><br><span class="line">Current count: 42</span><br><span class="line">iex(3)&gt; Counter.next(counter)</span><br><span class="line">Current count: 43</span><br></pre></td></tr></table></figure>
+<h5 id="Bidirectional-Communication"><a href="#Bidirectional-Communication" class="headerlink" title="Bidirectional Communication"></a>Bidirectional Communication</h5><p>What happens if we want to receive a reply? For example, we want Counter actor to return the next number rather than just printing it?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">defmodule Counter do</span><br><span class="line">    def start(count) do</span><br><span class="line">        spawn(__MODULE__, :loop, [count])</span><br><span class="line">    end</span><br><span class="line">    def next(counter) do</span><br><span class="line">        ref = make_ref()                      --- Note: ref is a unique reference generated by the sender with make_ref(), which is used to ensure that</span><br><span class="line">        send(counter, &#123;:next, self(), ref&#125;)             the reply will be correctly identified even if there are multiple messages waiting in the client’s mailbox.</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:ok, ^ref, count&#125; -&gt; count</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    def loop(count) do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:next, sender, ref&#125; -&gt;</span><br><span class="line">                send(sender, &#123;:ok, ref, count&#125;)</span><br><span class="line">                loop(count + 1)</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Naming-Processes"><a href="#Naming-Processes" class="headerlink" title="Naming Processes"></a>Naming Processes</h5><p>What if we don’t know the identifier of the actor to communicate ?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">iex(1)&gt; pid = Counter.start(42)</span><br><span class="line">#PID&lt;0.47.0&gt;</span><br><span class="line">iex(2)&gt; Process.register(pid, :counter)</span><br><span class="line">true</span><br><span class="line">iex(3)&gt; counter = Process.whereis(:counter)</span><br><span class="line">#PID&lt;0.47.0&gt;</span><br><span class="line">iex(4)&gt; Counter.next(counter)</span><br><span class="line">42</span><br><span class="line">iex(6)&gt; send(:counter, &#123;:next, self(), make_ref()&#125;)</span><br><span class="line">&#123;:next, #PID&lt;0.45.0&gt;, #Reference&lt;0.0.0.107&gt;&#125;</span><br><span class="line">iex(7)&gt; receive do msg -&gt; msg end</span><br><span class="line">&#123;:ok, #Reference&lt;0.0.0.107&gt;, 43&#125;</span><br></pre></td></tr></table></figure>
+<p>Use this to modify Counter’s API so that it doesn’t require a process identifier each time we call it</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">def start(count) do</span><br><span class="line">    pid = spawn(__MODULE__, :loop, [count])</span><br><span class="line">    Process.register(pid, :counter)</span><br><span class="line">    pid</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">def next do</span><br><span class="line">    ref = make_ref()</span><br><span class="line">    send(:counter, &#123;:next, self(), ref&#125;)</span><br><span class="line">    receive do</span><br><span class="line">        &#123;:ok, ^ref, count&#125; -&gt; count</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="Parallel-Map"><a href="#Parallel-Map" class="headerlink" title="Parallel Map"></a>Parallel Map</h3><h5 id="First-class-functions"><a href="#First-class-functions" class="headerlink" title="First class functions"></a>First class functions</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">iex(1)&gt; Enum.map([1, 2, 3, 4], fn(x) -&gt; x * 2 end)</span><br><span class="line">[2, 4, 6, 8]</span><br><span class="line">iex(2)&gt; Enum.map([1, 2, 3, 4], &amp;(&amp;1 * 2))</span><br><span class="line">[2, 4, 6, 8]</span><br><span class="line">iex(3)&gt; Enum.reduce([1, 2, 3, 4], 0, &amp;(&amp;1 + &amp;2))</span><br><span class="line">10</span><br><span class="line">iex(4)&gt; double = &amp;(&amp;1 * 2)</span><br><span class="line">#Function&lt;erl_eval.6.80484245&gt;</span><br><span class="line">iex(5)&gt; double.(3)                   &lt;-- call anonymous function with the . (apply) operator</span><br><span class="line">6</span><br><span class="line">iex(6)&gt; twice = fn(fun) -&gt; fn(x) -&gt; fun.(fun.(x)) end end        &lt;-- a function that takes an anonymous function as parameter and returns a function</span><br><span class="line">#Function&lt;erl_eval.6.80484245&gt;</span><br><span class="line">iex(7)&gt; twice.(double).(3)             &lt;--- equals (twice.(double)).(3)</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+<h5 id="Parallel-Map-Implementation"><a href="#Parallel-Map-Implementation" class="headerlink" title="Parallel Map Implementation"></a>Parallel Map Implementation</h5><p>Enum.map can be used to map a function over a collection sequentially, and here’s an alternative that do it in parallel</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">defmodule Parallel do</span><br><span class="line">    def map(collection, fun) do</span><br><span class="line">        parent = self()</span><br><span class="line"></span><br><span class="line">        processes = Enum.map(collection, fn(e) -&gt;</span><br><span class="line">            spawn_link(fn() -&gt;                          &lt;-- create a process for each element.</span><br><span class="line">                send(parent, &#123;self(), fun.(e)&#125;)         &lt;-- each of processes applies fun to the element and sends result back</span><br><span class="line">            end)                                        &lt;-- self() here is the process, not parent</span><br><span class="line">        end)</span><br><span class="line"></span><br><span class="line">        Enum.map(processes, fn(pid) -&gt;                  &lt;-- in parent process, block and wait</span><br><span class="line">            receive do                                  &lt;-- parent wait result sequentially</span><br><span class="line">                &#123;^pid, result&#125; -&gt; result</span><br><span class="line">            end</span><br><span class="line">        end)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>The whole logic is like spawning multiple process to handle multiple elements, and join the result together. Test it:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iex(1)&gt; slow_double = fn(x) -&gt; :timer.sleep(1000); x * 2 end</span><br><span class="line">#Function&lt;6.80484245 in :erl_eval.expr/5&gt;</span><br><span class="line">iex(2)&gt; :timer.tc(fn() -&gt; Enum.map([1, 2, 3, 4], slow_double) end)</span><br><span class="line">&#123;4003414, [2, 4, 6, 8]&#125;</span><br><span class="line">iex(3)&gt; :timer.tc(fn() -&gt; Parallel.map([1, 2, 3, 4], slow_double) end)</span><br><span class="line">&#123;1001131, [2, 4, 6, 8]&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Error-Handling-and-Resilience"><a href="#Error-Handling-and-Resilience" class="headerlink" title="Error Handling and Resilience"></a>Error Handling and Resilience</h3><h5 id="Example-of-HashDict"><a href="#Example-of-HashDict" class="headerlink" title="Example of HashDict"></a>Example of HashDict</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iex(1)&gt; d = HashDict.new</span><br><span class="line">#HashDict&lt;[]&gt;</span><br><span class="line">iex(2)&gt; d1 = Dict.put(d, :a, &quot;A value for a&quot;)           &lt;-- we can see, d is immutable, and Dict.put will create a new HashDict instance</span><br><span class="line">#HashDict&lt;[a: &quot;A value for a&quot;]&gt;</span><br><span class="line">iex(4)&gt; d1[:a]</span><br><span class="line">&quot;A value for a&quot;</span><br></pre></td></tr></table></figure>
+<h5 id="A-Cache-Actor"><a href="#A-Cache-Actor" class="headerlink" title="A Cache Actor"></a>A Cache Actor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">defmodule Cache do</span><br><span class="line">    def loop(pages, size) do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:put, url, page&#125; -&gt;</span><br><span class="line">                new_pages = Dict.put(pages, url, page)</span><br><span class="line">                new_size = size + byte_size(page)</span><br><span class="line">                loop(new_pages, new_size)            &lt;-- loop with new pages and size</span><br><span class="line">            &#123;:get, sender, ref, url&#125; -&gt;</span><br><span class="line">                send(sender, &#123;:ok, ref, pages[url]&#125;)</span><br><span class="line">                loop(pages, size)</span><br><span class="line">            &#123;:size, sender, ref&#125; -&gt;</span><br><span class="line">                send(sender, &#123;:ok, ref, size&#125;)</span><br><span class="line">                loop(pages, size)</span><br><span class="line">            &#123;:terminate&#125; -&gt;                  &lt;-- Terminate request - don&apos;t recurse</span><br><span class="line">         end</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def start_link do</span><br><span class="line">        pid = spawn_link(__MODULE__, :loop, [HashDict.new, 0])     &lt;-- init values</span><br><span class="line">        Process.register(pid, :cache)               &lt;-- register a name</span><br><span class="line">        pid</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def put(url, page) do</span><br><span class="line">        send(:cache, &#123;:put, url, page&#125;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def get(url) do</span><br><span class="line">        ref = make_ref()</span><br><span class="line">        send(:cache, &#123;:get, self(), ref, url&#125;)</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:ok, ^ref, page&#125; -&gt; page</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def size do</span><br><span class="line">        ......         &lt;-- just like get()</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def terminate do</span><br><span class="line">        send(:cache, &#123;:terminate&#125;)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Actor-fails-when-putting-cache-invalid-data"><a href="#Actor-fails-when-putting-cache-invalid-data" class="headerlink" title="Actor fails when putting cache invalid data"></a>Actor fails when putting cache invalid data</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">iex(5)&gt; Cache.put(&quot;paulbutcher.com&quot;, nil)         &lt;-- use nil as value to put</span><br><span class="line">&#123;:put, &quot;paulbutcher.com&quot;, nil&#125;</span><br><span class="line">iex(6)&gt;</span><br><span class="line">=ERROR REPORT==== 22-Aug-2013::16:18:41 ===</span><br><span class="line">Error in process &lt;0.47.0&gt; with exit value: &#123;badarg,[&#123;erlang,byte_size,[nil],[]&#125; …</span><br><span class="line">** (EXIT from #PID&lt;0.47.0&gt;) &#123;:badarg, [&#123;:erlang, :byte_size, [nil], []&#125;, …</span><br></pre></td></tr></table></figure>
+<p>How Elixir handle failures? Separating error handling out into a separate supervisor process.</p>
+<p>To see how to write such a supervisor, we need to understand links between processes in more detail.</p>
+<h5 id="Links-Propagate-Abnormal-Termination"><a href="#Links-Propagate-Abnormal-Termination" class="headerlink" title="Links Propagate Abnormal Termination"></a>Links Propagate Abnormal Termination</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">defmodule LinkTest do</span><br><span class="line">    def loop do</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:exit_because, reason&#125; -&gt; exit(reason)</span><br><span class="line">            &#123;:link_to, pid&#125; -&gt; Process.link(pid)         &lt;-- link two processes</span><br><span class="line">            &#123;:EXIT, pid, reason&#125; -&gt; IO.puts(&quot;#&#123;inspect(pid)&#125; exited because #&#123;reason&#125;&quot;)</span><br><span class="line">        end</span><br><span class="line">        loop</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">iex(1)&gt; pid1 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">iex(2)&gt; pid2 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">iex(3)&gt; send(pid1, &#123;:link_to, pid2&#125;)</span><br><span class="line">iex(4)&gt; send(pid2, &#123;:exit_because, :bad_thing_happened&#125;)</span><br><span class="line">&#123;:exit_because, :bad_thing_happened&#125;          &lt;--- no message printed by pid1 describing why pid2 exited</span><br><span class="line">iex(5)&gt; Process.info(pid2, :status)</span><br><span class="line">nil</span><br><span class="line">iex(6)&gt; Process.info(pid1, :status)</span><br><span class="line">nil                                           &lt;--- both our processes have terminated, not just pid2.</span><br><span class="line"></span><br><span class="line">iex(1)&gt; pid1 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">iex(2)&gt; pid2 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">iex(3)&gt; send(pid1, &#123;:link_to, pid2&#125;)</span><br><span class="line">iex(4)&gt; send(pid1, &#123;:exit_because, :another_bad_thing_happened&#125;)        &lt;-- links are bidirectional</span><br><span class="line">iex(5)&gt; Process.info(pid1, :status)</span><br><span class="line">nil</span><br><span class="line">iex(6)&gt; Process.info(pid2, :status)</span><br><span class="line">nil                                           &lt;--- both our processes have terminated, not just pid1.</span><br><span class="line"></span><br><span class="line">iex(1)&gt; pid1 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">#PID&lt;0.47.0&gt;</span><br><span class="line">iex(2)&gt; pid2 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">#PID&lt;0.49.0&gt;</span><br><span class="line">iex(3)&gt; send(pid1, &#123;:link_to, pid2&#125;)</span><br><span class="line">&#123;:link_to, #PID&lt;0.49.0&gt;&#125;</span><br><span class="line">iex(4)&gt; send(pid2, &#123;:exit_because, :normal&#125;)    &lt;--- pid2 exit normally</span><br><span class="line">&#123;:exit_because, :normal&#125;</span><br><span class="line">iex(5)&gt; Process.info(pid2, :status)</span><br><span class="line">nil</span><br><span class="line">iex(6)&gt; Process.info(pid1, :status)</span><br><span class="line">&#123;:status, :waiting&#125;                             &lt;--- normal termination does not result in linked processes terminating.</span><br></pre></td></tr></table></figure>
+<h5 id="System-Processes"><a href="#System-Processes" class="headerlink" title="System Processes"></a>System Processes</h5><p>A process to trap another’s exit by setting its :trap_exit flag, and this is making it into a system process</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">def loop_system do</span><br><span class="line">    Process.flag(:trap_exit, true)</span><br><span class="line">    loop</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">iex(1)&gt; pid1 = spawn(&amp;LinkTest.loop_system/0)</span><br><span class="line">#PID&lt;0.47.0&gt;</span><br><span class="line">iex(2)&gt; pid2 = spawn(&amp;LinkTest.loop/0)</span><br><span class="line">#PID&lt;0.49.0&gt;</span><br><span class="line">iex(3)&gt; send(pid1, &#123;:link_to, pid2&#125;)</span><br><span class="line">&#123;:link_to, #PID&lt;0.49.0&gt;&#125;</span><br><span class="line">iex(4)&gt; send(pid2, &#123;:exit_because, :yet_another_bad_thing_happened&#125;)</span><br><span class="line">&#123;:exit_because, :yet_another_bad_thing_happened&#125;</span><br><span class="line">#PID&lt;0.49.0&gt; exited because yet_another_bad_thing_happened      &lt;-- pid1 gets :EXIT message</span><br><span class="line">iex(5)&gt; Process.info(pid2, :status)</span><br><span class="line">nil</span><br><span class="line">iex(6)&gt; Process.info(pid1, :status)</span><br><span class="line">&#123;:status, :waiting&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="cache-supervisor"><a href="#cache-supervisor" class="headerlink" title="cache supervisor"></a>cache supervisor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">defmodule CacheSupervisor do</span><br><span class="line">    def start do</span><br><span class="line">        spawn(__MODULE__, :loop_system, [])</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def loop do</span><br><span class="line">        pid = Cache.start_link        &lt;-- create Cache Actor and link it with spawn_link</span><br><span class="line">        receive do</span><br><span class="line">            &#123;:EXIT, ^pid, :normal&#125; -&gt; </span><br><span class="line">                IO.puts(&quot;Cache exited normally&quot;)</span><br><span class="line">                :ok                &lt;-- don&apos;t loop when Cache exited normally</span><br><span class="line">            &#123;:EXIT, ^pid, reason&#125; -&gt;</span><br><span class="line">                IO.puts(&quot;Cache failed with reason #&#123;inspect reason&#125; - restarting it&quot;)</span><br><span class="line">                loop               &lt;-- loop when Cache exited abnormally, and that will recreate Cache Actor</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def loop_system do</span><br><span class="line">        Process.flag(:trap_exit, true)</span><br><span class="line">        loop</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h5><p>Automatically restarting the cache is great, but it’s not a panacea. See example below:</p>
+<ol>
+<li>Process 1 sends a :put message to the cache.</li>
+<li>Process 2 sends a :get message to the cache.</li>
+<li>The cache crashes while processing process 1’s message.</li>
+<li>The supervisor restarts the cache, but process 2’s message is lost.</li>
+<li>Process 2 is now deadlocked in a receive, waiting for a reply that will never arrive.</li>
+</ol>
+<p>Timeout to rescue</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def get(url) do</span><br><span class="line">    ref = make_ref()</span><br><span class="line">    send(:cache, &#123;:get, self(), ref, url&#125;)</span><br><span class="line">    receive do</span><br><span class="line">        &#123;:ok, ^ref, page&#125; -&gt; page</span><br><span class="line">        after 1000 -&gt; nil              &lt;-- timeout here</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="OTP-Intro"><a href="#OTP-Intro" class="headerlink" title="OTP Intro"></a>OTP Intro</h3><h5 id="Functions-and-Pattern-Matching"><a href="#Functions-and-Pattern-Matching" class="headerlink" title="Functions and Pattern Matching"></a>Functions and Pattern Matching</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">defmodule Patterns do</span><br><span class="line">    def foo(&#123;x, y&#125;) do</span><br><span class="line">        IO.puts(&quot;Got a pair, first element #&#123;x&#125;, second #&#123;y&#125;&quot;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def foo(&#123;x, y, z&#125;) do</span><br><span class="line">        IO.puts(&quot;Got a triple: #&#123;x&#125;, #&#123;y&#125;, #&#123;z&#125;&quot;)</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">iex(1)&gt; Patterns.foo(&#123;:a, 42, &quot;yahoo&quot;&#125;)</span><br><span class="line">Got a triple: a, 42, yahoo</span><br><span class="line">iex(2)&gt; Patterns.foo(&#123;:x, :y&#125;)</span><br><span class="line">Got a pair, first element x, second y</span><br><span class="line">iex(3)&gt; Patterns.foo(&quot;something else&quot;)</span><br><span class="line">** (FunctionClauseError) no function clause matching in Patterns.foo/1  ......</span><br></pre></td></tr></table></figure>
+<h5 id="Reimplementing-Cache-with-GenServer"><a href="#Reimplementing-Cache-with-GenServer" class="headerlink" title="Reimplementing Cache with GenServer"></a>Reimplementing Cache with GenServer</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">defmodule Cache do</span><br><span class="line">    use GenServer.Behaviour</span><br><span class="line">    def handle_cast(&#123;:put, url, page&#125;, &#123;pages, size&#125;) do</span><br><span class="line">        new_pages = Dict.put(pages, url, page)</span><br><span class="line">        new_size = size + byte_size(page)</span><br><span class="line">        &#123;:noreply, &#123;new_pages, new_size&#125;&#125;</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_call(&#123;:get, url&#125;, _from, &#123;pages, size&#125;) do</span><br><span class="line">        &#123;:reply, pages[url], &#123;pages, size&#125;&#125;</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_call(&#123;:size&#125;, _from, &#123;pages, size&#125;) do</span><br><span class="line">        &#123;:reply, size, &#123;pages, size&#125;&#125;</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>handle_cast(), handles messages that do not require a reply. </li>
+<li>It takes two arguments: the first is the message and the second is the current actor state. </li>
+<li><p>The return value is a pair of the form {:noreply, new_state}.</p>
+</li>
+<li><p>handle_call(), handles messages that require a reply. </p>
+</li>
+<li>It takes three arguments, the message, the sender, and the current state. </li>
+<li><p>The return value is a triple of the form {:reply, reply_value, new_state}.</p>
+</li>
+<li><p>Elixir uses variable names that start with an underscore (“_”) to indicate that they’re unused here, say _from.</p>
+</li>
+</ul>
+<p>wrapper API to call a GenServer<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def start_link do</span><br><span class="line">    :gen_server.start_link(&#123;:local, :cache&#125;, __MODULE__, &#123;HashDict.new, 0&#125;, [])</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">def put(url, page) do</span><br><span class="line">    :gen_server.cast(:cache, &#123;:put, url, page&#125;)</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">def get(url) do</span><br><span class="line">    :gen_server.call(:cache, &#123;:get, url&#125;)</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">def size do</span><br><span class="line">    :gen_server.call(:cache, &#123;:size&#125;)</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<h5 id="An-OTP-Supervisor"><a href="#An-OTP-Supervisor" class="headerlink" title="An OTP Supervisor"></a>An OTP Supervisor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">defmodule CacheSupervisor do</span><br><span class="line">    def init(_args) do</span><br><span class="line">        workers = [worker(Cache, [])]</span><br><span class="line">        supervise(workers, strategy: :one_for_one)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>init() function is called during startup. It takes a single argument (unused here) and simply creates a number of workers and sets them up to be supervised.</li>
+<li>The OTP supervisor behaviour supports a number of different restart strategies, the two most common being one-for-one and one-for-all.</li>
+<li>If a single worker fails, a supervisor using the one-for-all strategy will stop and restart all its workers (even those that didn’t fail). </li>
+<li>A supervisor using a one-for-one strategy, by contrast, will only restart the failed worker.</li>
+</ul>
+<p>wrapper API<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def start_link do</span><br><span class="line">    :supervisor.start_link(__MODULE__, [])</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<h5 id="Nodes"><a href="#Nodes" class="headerlink" title="Nodes"></a>Nodes</h5><p>Whenever we create an instance of the Erlang virtual machine, we create a node. Now we’ll see how to create and connect multiple nodes.</p>
+<p>For one node to connect to another, they both need to be named. We name a node by starting the Erlang VM with the –name or –sname options.</p>
+<p>create two nodes<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iex --sname node1@10.99.1.50 --cookie yumyum         &lt;-- an Erlang node will accept connection requests only from nodes that have the same cookie.</span><br><span class="line">iex --sname node2@10.99.1.92 --cookie yumyum</span><br></pre></td></tr></table></figure></p>
+<p>from the first node<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">iex(node1@10.99.1.50)1&gt; Node.self                   &lt;-- query its name</span><br><span class="line">:&quot;node1@10.99.1.50&quot;</span><br><span class="line">iex(node1@10.99.1.50)2&gt; Node.list                   &lt;-- list the other nodes it knows about, so 1.50 don&apos;t know about 1.92 yet</span><br><span class="line">[]</span><br></pre></td></tr></table></figure></p>
+<p>connect nodes<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iex(node1@10.99.1.50)3&gt; Node.connect(:&quot;node2@10.99.1.92&quot;)</span><br><span class="line">true</span><br><span class="line">iex(node1@10.99.1.50)4&gt; Node.list</span><br><span class="line">[:&quot;node2@10.99.1.92&quot;]                               &lt;-- now it knows</span><br><span class="line">iex(node2@10.99.1.92)1&gt; Node.list                   &lt;-- Connections are bidirectional</span><br><span class="line">[:&quot;node1@10.99.1.50&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>remote execution<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">iex(node1@10.99.1.50)5&gt; whoami = fn() -&gt; IO.puts(Node.self) end</span><br><span class="line">#Function&lt;20.80484245 in :erl_eval.expr/5&gt;</span><br><span class="line">iex(node1@10.99.1.50)6&gt; Node.spawn(:&quot;node2@10.99.1.92&quot;, whoami)</span><br><span class="line">#PID&lt;8242.50.0&gt;</span><br><span class="line">node2@10.99.1.92                   &lt;-- not only has one node executed code on another, but the output appeared on the first node.</span><br></pre></td></tr></table></figure></p>
+<p>remote messaging<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">iex(node2@10.99.1.92)1&gt; pid = spawn(Counter, :loop, [42])</span><br><span class="line">#PID&lt;0.51.0&gt;</span><br><span class="line">iex(node2@10.99.1.92)2&gt; :global.register_name(:counter, pid)       &lt;-- similar to Process.register(), except that the name is cluster-global</span><br><span class="line">:yes</span><br><span class="line">iex(node1@10.99.1.50)1&gt; Node.connect(:&quot;node2@10.99.1.92&quot;)</span><br><span class="line">true</span><br><span class="line">iex(node1@10.99.1.50)2&gt; pid = :global.whereis_name(:counter)</span><br><span class="line">#PID&lt;7856.51.0&gt;</span><br><span class="line">iex(node1@10.99.1.50)3&gt; send(pid, &#123;:next&#125;)</span><br><span class="line">&#123;:next&#125;</span><br><span class="line">iex(node1@10.99.1.50)4&gt; send(pid, &#123;:next&#125;)</span><br><span class="line">&#123;:next&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Distributed-Word-Count"><a href="#Distributed-Word-Count" class="headerlink" title="Distributed Word Count"></a>Distributed Word Count</h3><ul>
+<li>Our solution is divided into three types of actors: one Parser, multiple Counters, and one Accumulator. </li>
+<li>The Parser is responsible for parsing a Wikipedia dump into pages.</li>
+<li>Counters count words within pages.</li>
+<li>The Accumulator keeps track of total word counts across pages.</li>
+</ul>
+<h6 id="Counter-–-counting-words"><a href="#Counter-–-counting-words" class="headerlink" title="Counter – counting words"></a>Counter – counting words</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">defmodule Counter do</span><br><span class="line">    use GenServer.Behaviour</span><br><span class="line">    def start_link do</span><br><span class="line">        :gen_server.start_link(__MODULE__, nil, [])</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def deliver_page(pid, ref, page) do                &lt;-- will be called by Parser to reply request_page() request</span><br><span class="line">        :gen_server.cast(pid, &#123;:deliver_page, ref, page&#125;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def init(_args) do</span><br><span class="line">        Parser.request_page(self())      &lt;-- kicks things off by calling Parser.request_page() during initialization</span><br><span class="line">        &#123;:ok, nil&#125;</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_cast(&#123;:deliver_page, ref, page&#125;, state) do</span><br><span class="line">        Parser.request_page(self())          &lt;-- starts by requesting another page</span><br><span class="line">        words = String.split(page)</span><br><span class="line">        counts = Enum.reduce(words, HashDict.new, fn(word, counts) -&gt;</span><br><span class="line">            Dict.update(counts, word, 1, &amp;(&amp;1 + 1))</span><br><span class="line">            end)</span><br><span class="line">        Accumulator.deliver_counts(ref, counts)</span><br><span class="line">        &#123;:noreply, state&#125;</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Counter-Supervisor"><a href="#Counter-Supervisor" class="headerlink" title="Counter Supervisor"></a>Counter Supervisor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">defmodule CounterSupervisor do</span><br><span class="line">    use Supervisor.Behaviour</span><br><span class="line">    def start_link(num_counters) do</span><br><span class="line">        :supervisor.start_link(__MODULE__, num_counters)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def init(num_counters) do</span><br><span class="line">        workers = Enum.map(1..num_counters, fn(n) -&gt;</span><br><span class="line">            worker(Counter, [], id: &quot;counter#&#123;n&#125;&quot;)         &lt;-- create num_counters Counters with distince id</span><br><span class="line">        end)</span><br><span class="line">        supervise(workers, strategy: :one_for_one)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Accumulator-keeps-track-of-Totals"><a href="#Accumulator-keeps-track-of-Totals" class="headerlink" title="Accumulator keeps track of Totals"></a>Accumulator keeps track of Totals</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">defmodule Accumulator do</span><br><span class="line">    use GenServer.Behaviour</span><br><span class="line">    def start_link do</span><br><span class="line">        :gen_server.start_link(&#123;:global, :wc_accumulator&#125;, __MODULE__,       &lt;-- it is global</span><br><span class="line">        &#123;HashDict.new, HashSet.new&#125;, [])           &lt;-- hashdict for total counts &amp; hashset for processed pages</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def deliver_counts(ref, counts) do         &lt;-- called by Counter after it counts the page</span><br><span class="line">        :gen_server.cast(&#123;:global, :wc_accumulator&#125;, &#123;:deliver_counts, ref, counts&#125;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_cast(&#123;:deliver_counts, ref, counts&#125;, &#123;totals, processed_pages&#125;) do</span><br><span class="line">        if Set.member?(processed_pages, ref) do       &lt;-- in case that the count are received multi times</span><br><span class="line">            &#123;:noreply, &#123;totals, processed_pages&#125;&#125;</span><br><span class="line">        else</span><br><span class="line">            new_totals = Dict.merge(totals, counts, fn(_k, v1, v2) -&gt; v1 + v2 end)</span><br><span class="line">            new_processed_pages = Set.put(processed_pages, ref)</span><br><span class="line">            Parser.processed(ref)              &lt;-- call this after processing pages</span><br><span class="line">            &#123;:noreply, &#123;new_totals, new_processed_pages&#125;&#125;</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h5 id="Parser-Parsing-and-Fault-Tolerance"><a href="#Parser-Parsing-and-Fault-Tolerance" class="headerlink" title="Parser - Parsing and Fault Tolerance"></a>Parser - Parsing and Fault Tolerance</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">defmodule Parser do</span><br><span class="line">    use GenServer.Behaviour</span><br><span class="line">    def start_link(filename) do</span><br><span class="line">        :gen_server.start_link(&#123;:global, :wc_parser&#125;, __MODULE__, filename, [])    &lt;-- global</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def request_page(pid) do      &lt;-- called by Counter, pid is the id of Counter</span><br><span class="line">        :gen_server.cast(&#123;:global, :wc_parser&#125;, &#123;:request_page, pid&#125;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def processed(ref) do      &lt;-- called by Accumulator after merge page count</span><br><span class="line">        :gen_server.cast(&#123;:global, :wc_parser&#125;, &#123;:processed, ref&#125;)</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def init(filename) do</span><br><span class="line">        xml_parser = Pages.start_link(filename)</span><br><span class="line">        &#123;:ok, &#123;ListDict.new, xml_parser&#125;&#125;     &lt;-- ListDict for pending pages which have been sent but not yet processed</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_cast(&#123;:request_page, pid&#125;, &#123;pending, xml_parser&#125;) do</span><br><span class="line">        new_pending = deliver_page(pid, pending, Pages.next(xml_parser))     &lt;-- implemented below</span><br><span class="line">        &#123;:noreply, &#123;new_pending, xml_parser&#125;&#125;</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    def handle_cast(&#123;:processed, ref&#125;, &#123;pending, xml_parser&#125;) do</span><br><span class="line">        new_pending = Dict.delete(pending, ref)      &lt;-- if processed, removed from pending pages</span><br><span class="line">        &#123;:noreply, &#123;new_pending, xml_parser&#125;&#125;</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    defp deliver_page(pid, pending, page) when nil?(page) do    &lt;-- abnormal workflow when no new pages to sent, in this case send pending pages</span><br><span class="line">        if Enum.empty?(pending) do         &lt;-- no pages pending, do nothing</span><br><span class="line">            pending # Nothing to do</span><br><span class="line">        else</span><br><span class="line">            &#123;ref, prev_page&#125; = List.last(pending)      &lt;-- ref is also saved in pending, so ref will always be the same for the same page</span><br><span class="line">            Counter.deliver_page(pid, ref, prev_page)</span><br><span class="line">            Dict.put(Dict.delete(pending, ref), ref, prev_page)</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    defp deliver_page(pid, pending, page) do     &lt;-- normal workflow when there are still pages not sent yet</span><br><span class="line">        ref = make_ref()</span><br><span class="line">        Counter.deliver_page(pid, ref, page)</span><br><span class="line">        Dict.put(pending, ref, page)            &lt;-- not processed yet, so add to pending pages</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>From the code, the whole framework works in “At Least Once” strategy for false tolerance, which means the page could be sent to different Counter for multiple times.</p>
+<p>To avoid duplicity, the same page is always linked to the same ref, which is kept by Parser’s pending page variable and Accumulator’s proessed pages variable.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Counter (multiple)                                 Parser (Only one global)                      Accumulator (Only one global)</span><br><span class="line">   |   --------- Parser.request_page ---------&gt;      |</span><br><span class="line">   |                                                 |</span><br><span class="line">   |   &lt;--- Counter.deliver_page(pid, ref, page) --- |</span><br><span class="line">   |  (could be new page or old page with old ref)   |</span><br><span class="line">   |                                                                                                  |</span><br><span class="line">   |   ----------------------------------------Accumulator.deliver_counts(ref, counts) ------------&gt;  |</span><br><span class="line">   |                                                                                                  |</span><br><span class="line">   |                                                 |  &lt;------- Parser.processed(ref)  ------------  |</span><br><span class="line">   |                                                 |                                                |</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/并发/" rel="tag">#并发</a>
+          
+            <a href="/tags/7日7并发模型/" rel="tag">#7日7并发模型</a>
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/Actor/" rel="tag">#Actor</a>
+          
+            <a href="/tags/Elixir/" rel="tag">#Elixir</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part7/" rel="next" title="7周7并发模型 P7 - The Lambda Architecture">
+                <i class="fa fa-chevron-left"></i> 7周7并发模型 P7 - The Lambda Architecture
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/28/7concurrent-models-in-7weeks-part3/" rel="prev" title="7周7并发模型 P3 - Seperate Identity from State in Clojure Way">
+                7周7并发模型 P3 - Seperate Identity from State in Clojure Way <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/28/7concurrent-models-in-7weeks-part4/"
+           data-title="7周7并发模型 P4 - Actors with Elixir" data-url="http://ijustloveses.github.io/2016/06/28/7concurrent-models-in-7weeks-part4/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Basic-Messages-and-Mailboxes"><span class="nav-number">1.</span> <span class="nav-text">Basic: Messages and Mailboxes</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#First-Actor"><span class="nav-number">1.0.1.</span> <span class="nav-text">First Actor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Stateful-Actors"><span class="nav-number">1.0.2.</span> <span class="nav-text">Stateful Actors</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Hiding-Messages-Behind-an-API"><span class="nav-number">1.0.3.</span> <span class="nav-text">Hiding Messages Behind an API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Bidirectional-Communication"><span class="nav-number">1.0.4.</span> <span class="nav-text">Bidirectional Communication</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Naming-Processes"><span class="nav-number">1.0.5.</span> <span class="nav-text">Naming Processes</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Map"><span class="nav-number">2.</span> <span class="nav-text">Parallel Map</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#First-class-functions"><span class="nav-number">2.0.1.</span> <span class="nav-text">First class functions</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Parallel-Map-Implementation"><span class="nav-number">2.0.2.</span> <span class="nav-text">Parallel Map Implementation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Error-Handling-and-Resilience"><span class="nav-number">3.</span> <span class="nav-text">Error Handling and Resilience</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Example-of-HashDict"><span class="nav-number">3.0.1.</span> <span class="nav-text">Example of HashDict</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#A-Cache-Actor"><span class="nav-number">3.0.2.</span> <span class="nav-text">A Cache Actor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Actor-fails-when-putting-cache-invalid-data"><span class="nav-number">3.0.3.</span> <span class="nav-text">Actor fails when putting cache invalid data</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Links-Propagate-Abnormal-Termination"><span class="nav-number">3.0.4.</span> <span class="nav-text">Links Propagate Abnormal Termination</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#System-Processes"><span class="nav-number">3.0.5.</span> <span class="nav-text">System Processes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#cache-supervisor"><span class="nav-number">3.0.6.</span> <span class="nav-text">cache supervisor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Timeout"><span class="nav-number">3.0.7.</span> <span class="nav-text">Timeout</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OTP-Intro"><span class="nav-number">4.</span> <span class="nav-text">OTP Intro</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Functions-and-Pattern-Matching"><span class="nav-number">4.0.1.</span> <span class="nav-text">Functions and Pattern Matching</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Reimplementing-Cache-with-GenServer"><span class="nav-number">4.0.2.</span> <span class="nav-text">Reimplementing Cache with GenServer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#An-OTP-Supervisor"><span class="nav-number">4.0.3.</span> <span class="nav-text">An OTP Supervisor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Nodes"><span class="nav-number">4.0.4.</span> <span class="nav-text">Nodes</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Distributed-Word-Count"><span class="nav-number">5.</span> <span class="nav-text">Distributed Word Count</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Counter-–-counting-words"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">Counter – counting words</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Counter-Supervisor"><span class="nav-number">5.0.1.</span> <span class="nav-text">Counter Supervisor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Accumulator-keeps-track-of-Totals"><span class="nav-number">5.0.2.</span> <span class="nav-text">Accumulator keeps track of Totals</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Parser-Parsing-and-Fault-Tolerance"><span class="nav-number">5.0.3.</span> <span class="nav-text">Parser - Parsing and Fault Tolerance</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
