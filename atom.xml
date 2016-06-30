@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://ijustloveses.github.io/"/>
-  <updated>2016-06-29T06:24:50.000Z</updated>
+  <updated>2016-06-30T05:21:36.000Z</updated>
   <id>http://ijustloveses.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://ijustloveses.github.io/2016/06/28/hexo-tricks/"/>
     <id>http://ijustloveses.github.io/2016/06/28/hexo-tricks/</id>
     <published>2016-06-28T19:14:10.000Z</published>
-    <updated>2016-06-29T06:24:50.000Z</updated>
+    <updated>2016-06-30T05:21:36.000Z</updated>
     
     <content type="html">&lt;p&gt;Tricks and Tips on Hexo&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
@@ -33,6 +33,7 @@
 &lt;li&gt;hexo g 生成的静态页面，通常在 master 分支管理&lt;/li&gt;
 &lt;li&gt;源码另外在 src 分支管理&lt;/li&gt;
 &lt;/ul&gt;
+&lt;h3 id=&quot;SEO-搜索引擎优化&quot;&gt;&lt;a href=&quot;#SEO-搜索引擎优化&quot; class=&quot;headerlink&quot; title=&quot;SEO 搜索引擎优化&quot;&gt;&lt;/a&gt;SEO 搜索引擎优化&lt;/h3&gt;&lt;p&gt;参见&lt;br&gt;&lt;a href=&quot;http://www.arao.me/2015/hexo-next-theme-optimize-seo/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;动动手指，不限于NexT主题的Hexo优化（SEO篇）&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://www.jianshu.com/p/619dab2d3c08&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;hexo干货系列：（六）hexo提交搜索引擎（百度+谷歌）&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&quot;常见问题解决&quot;&gt;&lt;a href=&quot;#常见问题解决&quot; class=&quot;headerlink&quot; title=&quot;常见问题解决&quot;&gt;&lt;/a&gt;常见问题解决&lt;/h3&gt;&lt;p&gt;Refer: &lt;a href=&quot;http://theme-next.iissnan.com/faqs.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;常见问题&lt;/a&gt;&lt;/p&gt;
 &lt;h5 id=&quot;TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot;&gt;&lt;a href=&quot;#TypeError-Cannot-set-property-‘lastIndex’-of-undefined&quot; class=&quot;headerlink&quot; title=&quot;TypeError: Cannot set property ‘lastIndex’ of undefined&quot;&gt;&lt;/a&gt;TypeError: Cannot set property ‘lastIndex’ of undefined&lt;/h5&gt;&lt;p&gt;这个错误在 hexo g 生成静态网页时发生，在 _config.yml 中，找到 auto_detect 并设置为 false，解决&lt;/p&gt;
 </content>
