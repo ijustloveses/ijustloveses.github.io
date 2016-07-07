@@ -1,0 +1,762 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="并发,7日7并发模型,笔记,Parallelism," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 6. Data Parallelism with GPU">
+<meta property="og:type" content="article">
+<meta property="og:title" content="7周7并发模型 P6 - Data Parallelism with GPU">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/07/06/7concurrent-models-in-7weeks-part6/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 6. Data Parallelism with GPU">
+<meta property="og:updated_time" content="2016-07-07T05:52:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="7周7并发模型 P6 - Data Parallelism with GPU">
+<meta name="twitter:description" content="Notes on 7 Concurrent Models in 7 Weeks - Part 6. Data Parallelism with GPU">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> 7周7并发模型 P6 - Data Parallelism with GPU | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                7周7并发模型 P6 - Data Parallelism with GPU
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-06T18:27:25+00:00" content="2016-07-07">
+              2016-07-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/06/7concurrent-models-in-7weeks-part6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/06/7concurrent-models-in-7weeks-part6/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Notes on 7 Concurrent Models in 7 Weeks - Part 6. Data Parallelism with GPU</p>
+<a id="more"></a>
+<h3 id="GPGPU-Programming-Basis"><a href="#GPGPU-Programming-Basis" class="headerlink" title="GPGPU Programming Basis"></a>GPGPU Programming Basis</h3><ul>
+<li>The amount of data that needs to be processed is huge, the actual operations on that data are relatively simple vector or matrix operations.</li>
+<li>This makes them very amenable to data parallelization, in which multiple computing units perform the same operations on different items of data in parallel.</li>
+<li>GPUs combine pipelining and multiple ALUs with a wide range of other techniques, unfortunately, which’s little commonality between different GPUs.</li>
+<li>OpenCL targets multiple architectures by defining a C-like language that allows us to express a parallel algorithm abstractly.</li>
+<li>Divide your problem into the smallest workitems you can, OpenCL compiler and runtime then worry about how best to schedule those work-items on the available hardware.</li>
+</ul>
+<h3 id="Our-First-OpenCL-Program-Pair-wise-Multiply"><a href="#Our-First-OpenCL-Program-Pair-wise-Multiply" class="headerlink" title="Our First OpenCL Program - Pair-wise Multiply"></a>Our First OpenCL Program - Pair-wise Multiply</h3><ol>
+<li>Implement a kernel which is the core work item algorithm.</li>
+<li>Create a context within which the kernel will run together with a command queue.</li>
+<li>Compile the kernel.</li>
+<li>Create buffers for input and output data.</li>
+<li>Enqueue a command that executes the kernel once for each work-item.</li>
+<li>Retrieve the results.</li>
+</ol>
+<h5 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">kernel <span class="keyword">void</span> <span class="title">multiply_arrays</span><span class="params">(__global <span class="keyword">const</span> <span class="keyword">float</span>* inputA,</span><br><span class="line">                              __global <span class="keyword">const</span> <span class="keyword">float</span>* inputB,</span><br><span class="line">                              __global <span class="keyword">float</span>* output)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i = get_global_id(<span class="number">0</span>);</span><br><span class="line">  output[i] = inputA[i] * inputB[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The OpenCL standard defines both C and C++ bindings. However, unofficial bindings are available for most major languages. We stick to C here.</p>
+<p>It calls get_global_id() to determine which work-item it’s handling.</p>
+<h5 id="Context-and-Command-Queue"><a href="#Context-and-Command-Queue" class="headerlink" title="Context and Command Queue"></a>Context and Command Queue</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cl_platform_id platform;</span><br><span class="line">clGetPlatformIDs(<span class="number">1</span>, &amp;platform, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">cl_device_id device;</span><br><span class="line">clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, <span class="number">1</span>, &amp;device, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">cl_context context = clCreateContext(<span class="literal">NULL</span>, <span class="number">1</span>, &amp;device, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">cl_command_queue <span class="built_in">queue</span> = clCreateCommandQueue(context, device, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<p>We want a simple context that only contains a single GPU, so after identifying a platform with clGetPlatformIDs(), we pass CL_DEVICE_TYPE_GPU to clGetDeviceIDs() to get the ID of a GPU.</p>
+<p>The clCreateCommandQueue() method takes a context and a device and returns a queue that enables commands to be sent to that device.</p>
+<h5 id="Compile-the-Kernel"><a href="#Compile-the-Kernel" class="headerlink" title="Compile the Kernel"></a>Compile the Kernel</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span>* source = read_source(<span class="string">"multiply_arrays.cl"</span>);</span><br><span class="line">cl_program program = clCreateProgramWithSource(context, <span class="number">1</span>, (<span class="keyword">const</span> <span class="keyword">char</span>**)&amp;source, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"><span class="built_in">free</span>(source);</span><br><span class="line">clBuildProgram(program, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">cl_kernel kernel = clCreateKernel(program, <span class="string">"multiply_arrays"</span>, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="Create-Buffers"><a href="#Create-Buffers" class="headerlink" title="Create Buffers"></a>Create Buffers</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NUM_ELEMENTS 1024</span></span><br><span class="line"></span><br><span class="line">cl_float a[NUM_ELEMENTS], b[NUM_ELEMENTS];</span><br><span class="line">random_fill(a, NUM_ELEMENTS);</span><br><span class="line">random_fill(b, NUM_ELEMENTS);</span><br><span class="line">cl_mem inputA = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, <span class="keyword">sizeof</span>(cl_float) * NUM_ELEMENTS, a, <span class="literal">NULL</span>);</span><br><span class="line">cl_mem inputB = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, <span class="keyword">sizeof</span>(cl_float) * NUM_ELEMENTS, b, <span class="literal">NULL</span>);</span><br><span class="line">cl_mem output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, <span class="keyword">sizeof</span>(cl_float) * NUM_ELEMENTS, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="Execute-the-Work-Items"><a href="#Execute-the-Work-Items" class="headerlink" title="Execute the Work Items"></a>Execute the Work Items</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">clSetKernelArg(kernel, <span class="number">0</span>, <span class="keyword">sizeof</span>(cl_mem), &amp;inputA);</span><br><span class="line">clSetKernelArg(kernel, <span class="number">1</span>, <span class="keyword">sizeof</span>(cl_mem), &amp;inputB);</span><br><span class="line">clSetKernelArg(kernel, <span class="number">2</span>, <span class="keyword">sizeof</span>(cl_mem), &amp;output);</span><br><span class="line"></span><br><span class="line"><span class="keyword">size_t</span> work_units = NUM_ELEMENTS;</span><br><span class="line">clEnqueueNDRangeKernel(<span class="built_in">queue</span>, kernel, <span class="number">1</span>, <span class="literal">NULL</span>, &amp;work_units, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<p>First set the kernel’s arguments with clSetKernelArg(), then clEnqueueNDRangeKernel() queues an N-dimensional range (NDRange) of work-items.</p>
+<p>In our case, N is 1 (the 3rd argument to clEnqueueNDRangeKernel()) and the number of work-items is 1,024 (NUM_ELEMENTS).</p>
+<h5 id="Retrieve-Results-and-Clean-up"><a href="#Retrieve-Results-and-Clean-up" class="headerlink" title="Retrieve Results and Clean up"></a>Retrieve Results and Clean up</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cl_float results[NUM_ELEMENTS];</span><br><span class="line">clEnqueueReadBuffer(<span class="built_in">queue</span>, output, CL_TRUE, <span class="number">0</span>, <span class="keyword">sizeof</span>(cl_float) * NUM_ELEMENTS, results, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">clReleaseMemObject(inputA);</span><br><span class="line">clReleaseMemObject(inputB);</span><br><span class="line">clReleaseMemObject(output);</span><br><span class="line">clReleaseKernel(kernel);</span><br><span class="line">clReleaseProgram(program);</span><br><span class="line">clReleaseCommandQueue(<span class="built_in">queue</span>);</span><br><span class="line">clReleaseContext(context);</span><br></pre></td></tr></table></figure>
+<p>We create the results array and copy from the output buffer with the clEnqueueReadBuffer() function.</p>
+<h5 id="Profiling"><a href="#Profiling" class="headerlink" title="Profiling"></a>Profiling</h5><p>Simply change the last parameter of clEnqueueNDRangeKernel() to enable profiling, as below:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cl_event timing_event;</span><br><span class="line"><span class="keyword">size_t</span> work_units = NUM_ELEMENTS;</span><br><span class="line">clEnqueueNDRangeKernel(<span class="built_in">queue</span>, kernel, <span class="number">1</span>, <span class="literal">NULL</span>, &amp;work_units, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>, &amp;timing_event);</span><br><span class="line">cl_float results[NUM_ELEMENTS];</span><br><span class="line">clEnqueueReadBuffer(<span class="built_in">queue</span>, output, CL_TRUE, <span class="number">0</span>, <span class="keyword">sizeof</span>(cl_float) * NUM_ELEMENTS, results, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">cl_ulong starttime;</span><br><span class="line">clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_START, <span class="keyword">sizeof</span>(cl_ulong), &amp;starttime, <span class="literal">NULL</span>);  </span><br><span class="line">cl_ulong endtime;</span><br><span class="line">clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_END, <span class="keyword">sizeof</span>(cl_ulong), &amp;endtime, <span class="literal">NULL</span>);  </span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"Elapsed (GPU): %lu ns\n\n"</span>, (<span class="keyword">unsigned</span> <span class="keyword">long</span>)(endtime - starttime));</span><br><span class="line">clReleaseEvent(timing_event);</span><br></pre></td></tr></table></figure>
+<p>For this task, the GPU is more than nine times faster than a single CPU core.</p>
+<h5 id="What-if-there-are-multiple-devices"><a href="#What-if-there-are-multiple-devices" class="headerlink" title="What if there are multiple devices"></a>What if there are multiple devices</h5><p>To get fix number devices<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cl_device_id devices[<span class="number">8</span>];</span><br><span class="line">cl_uint num_devices;</span><br><span class="line">clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, <span class="number">8</span>, devices, &amp;num_devices);</span><br></pre></td></tr></table></figure></p>
+<p>num_devices will have been set to the number of available devices, and the first num_devices entries of the devices array will have been filled in.</p>
+<p>This works fine, but what if there are more than eight available devices?<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cl_uint num_devices;</span><br><span class="line">clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, <span class="number">0</span>, <span class="literal">NULL</span>, &amp;num_devices);</span><br><span class="line"></span><br><span class="line">cl_device_id* devices = (cl_device_id*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(cl_device_id) * num_devices);</span><br><span class="line">clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num_devices, devices, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure></p>
+<p>No explaination needed.</p>
+<h5 id="Error-handling"><a href="#Error-handling" class="headerlink" title="Error handling"></a>Error handling</h5><ol>
+<li>Some OpenCL functions return error codes, CL_SUCCESS indicates that the function succeeded; any other value indicates that it failed.</li>
+</ol>
+<p>So some kind of utility function or macro to simplify the error handling process, for example:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CHECK_STATUS(s) do &#123; \</span><br><span class="line">    cl_int ss = (s); \</span><br><span class="line">    <span class="meta-keyword">if</span> (ss != CL_SUCCESS) &#123; \</span><br><span class="line">        fprintf(stderr, <span class="string">"Error %d at line %d\n"</span>, ss, __LINE__); \</span><br><span class="line">        exit(1); \</span><br><span class="line">    &#125; \</span><br><span class="line">&#125; while (0)</span></span><br></pre></td></tr></table></figure></p>
+<p>This allows us to write the following:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CHECK_STATUS(clSetKernelArg(kernel, <span class="number">0</span>, <span class="keyword">sizeof</span>(cl_mem), &amp;inputA));</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>Some other OpenCL functions take an error_ret parameter.</li>
+</ol>
+<p>Here’s how we can call it with error handling:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cl_int status;</span><br><span class="line">cl_context context = clCreateContext(<span class="literal">NULL</span>, <span class="number">1</span>, &amp;device, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;status);</span><br><span class="line">CHECK_STATUS(status);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Multidimensional-Work-Item-Ranges"><a href="#Multidimensional-Work-Item-Ranges" class="headerlink" title="Multidimensional Work-Item Ranges"></a>Multidimensional Work-Item Ranges</h3><p>When executing a kernel via clEnqueueNDRangeKernel(), an index space is defined where each point is identified by a unique global ID that represents a work-item.</p>
+<p>A kernel can find the global ID of the work-item it’s executing by calling get_global_id().</p>
+<p>In the 1st example, the index space is unidimensional, and therefore the kernel only needed to call get_global_id() once.</p>
+<p>We will create a kernel that multiplies two-dimensional matrices and therefore calls get_global_id() twice.</p>
+<h5 id="Parallel-Matrix-Multiplication"><a href="#Parallel-Matrix-Multiplication" class="headerlink" title="Parallel Matrix Multiplication"></a>Parallel Matrix Multiplication</h5><p>kernel is as below:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">kernel <span class="keyword">void</span> <span class="title">matrix_multiplication</span><span class="params">(uint widthA,</span><br><span class="line">                                    __global <span class="keyword">const</span> <span class="keyword">float</span>* inputA,</span><br><span class="line">                                    __global <span class="keyword">const</span> <span class="keyword">float</span>* inputB,</span><br><span class="line">                                    __global <span class="keyword">float</span>* output)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> i = get_global_id(<span class="number">0</span>); </span><br><span class="line">  <span class="keyword">int</span> j = get_global_id(<span class="number">1</span>); </span><br><span class="line"></span><br><span class="line">  <span class="comment">// Note that: outputWidth == widthB  &amp;&amp;  outputHeight == heightA  &amp;&amp;  widthA == heightB</span></span><br><span class="line">  <span class="keyword">int</span> outputWidth = get_global_size(<span class="number">0</span>); </span><br><span class="line">  <span class="keyword">int</span> outputHeight = get_global_size(<span class="number">1</span>); </span><br><span class="line">  <span class="keyword">int</span> widthB = outputWidth;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">float</span> total = <span class="number">0.0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; widthA; ++k) &#123; </span><br><span class="line">    total += inputA[j * widthA + k] * inputB[k * widthB + i];</span><br><span class="line">  &#125;</span><br><span class="line">  output[j * outputWidth + i] = total;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>the kernel calculate the (j, i) item of A * B</li>
+<li>A, B &amp; output Matrix are all save in a 1-dimensional array, instead of 2-demensional.</li>
+<li>This kernel executes within a two-dimensional index space, each point of which identifies a location in the output array.</li>
+<li>It can find out the range of the index space by calling get_global_size().</li>
+<li>This also gives us widthB, which is equal to outputWidth, but we have to pass widthA as a parameter.</li>
+</ol>
+<p>Which is to say, if A is M<em>K dimension, B is K</em>N dimension, then M &amp; N are both global size, while K is a input parameter.</p>
+<p>To execute the kernal:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> work_units[] = &#123;WIDTH_OUTPUT, HEIGHT_OUTPUT&#125;;</span><br><span class="line">CHECK_STATUS(clEnqueueNDRangeKernel(<span class="built_in">queue</span>, kernel, <span class="number">2</span>, <span class="literal">NULL</span>, work_units, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>));</span><br></pre></td></tr></table></figure></p>
+<p>This creates a 2-dimensional index space by setting work_dim to 2 and specifies the extent of each dimension by setting global_work_size to work_units.</p>
+<h3 id="Data-Parallel-Reduce"><a href="#Data-Parallel-Reduce" class="headerlink" title="Data-Parallel Reduce"></a>Data-Parallel Reduce</h3><h5 id="Query-Device-Info"><a href="#Query-Device-Info" class="headerlink" title="Query Device Info"></a>Query Device Info</h5><p>Uses clGetDeviceInfo() to query and print a device parameter with a value of type string.</p>
+<p>To wrap a function to query device info,<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_device_param_string</span><span class="params">(cl_device_id device, cl_device_info param_id, <span class="keyword">const</span> <span class="keyword">char</span>* param_name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> value[<span class="number">1024</span>];</span><br><span class="line">    CHECK_STATUS(clGetDeviceInfo(device, param_id, <span class="keyword">sizeof</span>(value), value, <span class="literal">NULL</span>));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%s: %s\n"</span>, param_name, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_device_info</span><span class="params">(cl_device_id device)</span> </span>&#123;</span><br><span class="line">    print_device_param_string(device, CL_DEVICE_NAME, <span class="string">"Name"</span>);</span><br><span class="line">    print_device_param_string(device, CL_DEVICE_VENDOR, <span class="string">"Vendor"</span>);</span><br><span class="line">    print_device_param_uint(device, CL_DEVICE_MAX_COMPUTE_UNITS, <span class="string">"Compute Units"</span>);</span><br><span class="line">    print_device_param_ulong(device, CL_DEVICE_GLOBAL_MEM_SIZE, <span class="string">"Global Memory"</span>);</span><br><span class="line">    print_device_param_ulong(device, CL_DEVICE_LOCAL_MEM_SIZE, <span class="string">"Local Memory"</span>);</span><br><span class="line">    print_device_param_sizet(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, <span class="string">"Workgroup size"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>So what is Compute Units and Workgroup size ? What is the difference between global and local memory ?</p>
+<h5 id="Platform-Model"><a href="#Platform-Model" class="headerlink" title="Platform Model"></a>Platform Model</h5><ul>
+<li>An OpenCL platform consists of a host that’s connected to one or more devices.</li>
+<li>Each device has one or more compute units, each of which provides a number of processing elements.</li>
+<li>Work-items execute on processing elements. A collection of work-items executing on a single compute unit is a work-group.</li>
+<li>The work-items in a workgroup share local memory, which can be used for communication between work-items executing in that work-group.</li>
+<li>A single work-item has its Private memory.</li>
+<li>Global memory is the memory available to all work-items executing on a device.</li>
+<li>Constant memory is a region of global memory that remains constant during execution of a kernel.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">So, Host =&gt; Devices =&gt; Compute Units =&gt; WorkGroup =&gt; WorkItem</span><br><span class="line">            GlobalMem                   LocalMem     PrivateMem</span><br></pre></td></tr></table></figure>
+<h5 id="A-Single-Work-Group-Min"><a href="#A-Single-Work-Group-Min" class="headerlink" title="A Single Work-Group Min()"></a>A Single Work-Group Min()</h5><p>To simplify, assume that the number of elements in the array we want to reduce is a power of two and small enough to be processed by a single work-group.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">kernel <span class="keyword">void</span> <span class="title">find_minimum</span><span class="params">(__global <span class="keyword">const</span> <span class="keyword">float</span>* values,</span><br><span class="line">                           __global <span class="keyword">float</span>* result,</span><br><span class="line">                           __local <span class="keyword">float</span>* scratch)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i = get_global_id(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">int</span> n = get_global_size(<span class="number">0</span>);</span><br><span class="line">  scratch[i] = values[i]; </span><br><span class="line">  barrier(CLK_LOCAL_MEM_FENCE); </span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> j = n / <span class="number">2</span>; j &gt; <span class="number">0</span>; j /= <span class="number">2</span>) &#123; </span><br><span class="line">    <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">      scratch[i] = min(scratch[i], scratch[i + j]);</span><br><span class="line">    barrier(CLK_LOCAL_MEM_FENCE); </span><br><span class="line">  &#125; </span><br><span class="line">  <span class="keyword">if</span> (i == <span class="number">0</span>)</span><br><span class="line">    *result = scratch[<span class="number">0</span>]; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>ATTENTION: all work-items are NOT running sequentially, but simultaneously! Say we have 8 elements in values, we will have 8 work-items running at the same time.</li>
+<li>A barrier is a synchronization mechanism that allows work-items to coordinate their use of local memory.</li>
+<li>If one work-item in a work-group executes barrier(), then all work-items in that work-group must execute the same barrier() before any of them can proceed beyond that point<ul>
+<li>It ensures that one work-item doesn’t start reducing until all work-items have copied their value from global to local memory</li>
+<li>It ensures that one workitem doesn’t move on to loop iteration n + 1 until all work-items have finished loop iteration n.</li>
+</ul>
+</li>
+</ol>
+<p>For example, we have 8 elements in values, which are [35, 9, 1, 100, 83, 7, 28, 15], then the running steps will be:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">    Step                         scratch[i=0]       scratch[i=1]       scratch[i=2]      scratch[i=3]  scratch[i=4]  scratch[i=5]  scratch[i=6]  scratch[i=7]</span><br><span class="line">scratch[i] = values[i]               35                 9                   1                100            83            7             28           15</span><br><span class="line">barrier(CLK_LOCAL_MEM_FENCE)  ------------------------------- wait all work-items to finish , then go the the next step -------------------------------------</span><br><span class="line"></span><br><span class="line">1st loop: j = 4                 min(s[0], s[4])      min(s[1], s[5])    min(s[2], s[6])   min(s[3], s[7])     Do Nth.    Do Nth.     Do Nth.     Do Nth. </span><br><span class="line">                              = min(35, 83) = 35   = min(9, 7) = 7    = min(1, 28) = 1  = min(100, 15) = 15</span><br><span class="line">barrier(CLK_LOCAL_MEM_FENCE)  ------------------------------- wait all work-items to finish , then go the the next step -------------------------------------</span><br><span class="line"> </span><br><span class="line">2nd loop: j = 2                 min(s[0], s[2])      min(s[1], s[3])       Do Nth.          Do Nth.           Do Nth.    Do Nth.     Do Nth.     Do Nth.</span><br><span class="line">                              = min(35, 1) = 1     = min(7, 15) = 7</span><br><span class="line">barrier(CLK_LOCAL_MEM_FENCE)  ------------------------------- wait all work-items to finish , then go the the next step -------------------------------------</span><br><span class="line"></span><br><span class="line">3rd loop: j = 1                 min(s[0], s[1])          Do Nth.           Do Nth.          Do Nth.           Do Nth.    Do Nth.     Do Nth.     Do Nth.</span><br><span class="line">                              = min(1, 7) = 1          </span><br><span class="line">barrier(CLK_LOCAL_MEM_FENCE)  ------------------------------- wait all work-items to finish , then go the the next step -------------------------------------</span><br><span class="line"></span><br><span class="line">if i == 0 &#123;*result = scratch[0];&#125;    1</span><br></pre></td></tr></table></figure></p>
+<h5 id="A-Multiple-Work-Group-Min"><a href="#A-Multiple-Work-Group-Min" class="headerlink" title="A Multiple-Work-Group Min()"></a>A Multiple-Work-Group Min()</h5><p>The above example works fine, but work-groups are restricted in size (such as no more than 1024 elements), so how to parallelize over multiple work-groups?</p>
+<p>Extending our reduce across multiple work-groups is a simple matter of dividing the input array into work-groups and reducing each independently</p>
+<p>If, for example, each work-group operates on 64 values at a time, this will reduce an array of N items to N/64 items. This smaller array can then be reduced in turn, and so on, until only a single result remains.</p>
+<p>Each work-group has its local id and represents a section of a larger problem.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">global id 0   </span><br><span class="line">      |&lt;---------------------------- global size --------------------------------------------&gt;|</span><br><span class="line">      |                                                                                       |</span><br><span class="line">      [[      group 0      ],[      group 1      ],[      group 2      ],[      group 3      ]]</span><br><span class="line">                             |&lt;--- local size --&gt;|</span><br><span class="line">                             |                   |</span><br><span class="line">                        local id 0</span><br></pre></td></tr></table></figure></p>
+<p>so, kernel will be modified as below:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">kernel <span class="keyword">void</span> <span class="title">find_minimum</span><span class="params">(__global <span class="keyword">const</span> <span class="keyword">float</span>* values,</span><br><span class="line">                           __global <span class="keyword">float</span>* results,</span><br><span class="line">                           __local <span class="keyword">float</span>* scratch)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i = get_local_id(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">int</span> n = get_local_size(<span class="number">0</span>);</span><br><span class="line">  scratch[i] = values[get_global_id(<span class="number">0</span>)];</span><br><span class="line">  barrier(CLK_LOCAL_MEM_FENCE);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> j = n / <span class="number">2</span>; j &gt; <span class="number">0</span>; j /= <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">      scratch[i] = min(scratch[i], scratch[i + j]);</span><br><span class="line">    barrier(CLK_LOCAL_MEM_FENCE);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (i == <span class="number">0</span>)</span><br><span class="line">    results[get_group_id(<span class="number">0</span>)] = scratch[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>This kernel is only for one iteration, but not the whole process, and the result of its work-group will be saved into results[get_group_id(0)].</li>
+<li>To get the final result, we must run several iterations, and use results[] as the input parameter <strong>values</strong>, until one work-group is enough to hold values.</li>
+<li>This kernel is for one group identified by get_group_id(0), and the work-item is identified by get_local_id(0)</li>
+</ol>
+<p>To execute it<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> work_units[] = &#123;NUM_VALUES&#125;;</span><br><span class="line"><span class="keyword">size_t</span> workgroup_size[] = &#123;WORKGROUP_SIZE&#125;;</span><br><span class="line">CHECK_STATUS(clEnqueueNDRangeKernel(<span class="built_in">queue</span>, kernel, <span class="number">1</span>, <span class="literal">NULL</span>, work_units, workgroup_size, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>));</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/并发/" rel="tag">#并发</a>
+          
+            <a href="/tags/7日7并发模型/" rel="tag">#7日7并发模型</a>
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/Parallelism/" rel="tag">#Parallelism</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/01/7concurrent-models-in-7weeks-part5/" rel="next" title="7周7并发模型 P5 - CSP with Clojure">
+                <i class="fa fa-chevron-left"></i> 7周7并发模型 P5 - CSP with Clojure
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/06/7concurrent-models-in-7weeks-part6/"
+           data-title="7周7并发模型 P6 - Data Parallelism with GPU" data-url="http://ijustloveses.github.io/2016/07/06/7concurrent-models-in-7weeks-part6/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description">专注并发和机器学习</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github" rel="external nofollow">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#GPGPU-Programming-Basis"><span class="nav-number">1.</span> <span class="nav-text">GPGPU Programming Basis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Our-First-OpenCL-Program-Pair-wise-Multiply"><span class="nav-number">2.</span> <span class="nav-text">Our First OpenCL Program - Pair-wise Multiply</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Kernel"><span class="nav-number">2.0.1.</span> <span class="nav-text">Kernel</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Context-and-Command-Queue"><span class="nav-number">2.0.2.</span> <span class="nav-text">Context and Command Queue</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Compile-the-Kernel"><span class="nav-number">2.0.3.</span> <span class="nav-text">Compile the Kernel</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Create-Buffers"><span class="nav-number">2.0.4.</span> <span class="nav-text">Create Buffers</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Execute-the-Work-Items"><span class="nav-number">2.0.5.</span> <span class="nav-text">Execute the Work Items</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Retrieve-Results-and-Clean-up"><span class="nav-number">2.0.6.</span> <span class="nav-text">Retrieve Results and Clean up</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Profiling"><span class="nav-number">2.0.7.</span> <span class="nav-text">Profiling</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#What-if-there-are-multiple-devices"><span class="nav-number">2.0.8.</span> <span class="nav-text">What if there are multiple devices</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Error-handling"><span class="nav-number">2.0.9.</span> <span class="nav-text">Error handling</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multidimensional-Work-Item-Ranges"><span class="nav-number">3.</span> <span class="nav-text">Multidimensional Work-Item Ranges</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Parallel-Matrix-Multiplication"><span class="nav-number">3.0.1.</span> <span class="nav-text">Parallel Matrix Multiplication</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Reduce"><span class="nav-number">4.</span> <span class="nav-text">Data-Parallel Reduce</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Query-Device-Info"><span class="nav-number">4.0.1.</span> <span class="nav-text">Query Device Info</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Platform-Model"><span class="nav-number">4.0.2.</span> <span class="nav-text">Platform Model</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#A-Single-Work-Group-Min"><span class="nav-number">4.0.3.</span> <span class="nav-text">A Single Work-Group Min()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#A-Multiple-Work-Group-Min"><span class="nav-number">4.0.4.</span> <span class="nav-text">A Multiple-Work-Group Min()</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
