@@ -4,5 +4,6 @@ Disallow:
 
 User-agent: *
 Disallow: 
+
 Sitemap: https://ijustloveses.github.io/sitemap.xml
-Sitemap: https://ijustloveses.github.io/baidusitemap.xml
+# Sitemap: https://ijustloveses.github.io/baidusitemap.xml
