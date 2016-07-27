@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="hexo,blog," />
+  <meta name="keywords" content="笔记,Kubernetes,Docker,Microservice,分布式," />
 
 
 
@@ -86,16 +86,16 @@
 
 
 
-<meta name="description" content="Tricks and Tips on Hexo">
+<meta name="description" content="Some tips on Kubernetes Microservices with Docker">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Tricks and Tips on Hexo">
-<meta property="og:url" content="http://ijustloveses.github.io/2016/06/28/hexo-tricks/index.html">
+<meta property="og:title" content="Kubernetes Microservices with Docker">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/07/27/Kubernetes-microservices-with-docker/index.html">
 <meta property="og:site_name" content="泡茶说">
-<meta property="og:description" content="Tricks and Tips on Hexo">
-<meta property="og:updated_time" content="2016-06-30T05:21:36.000Z">
+<meta property="og:description" content="Some tips on Kubernetes Microservices with Docker">
+<meta property="og:updated_time" content="2016-07-27T06:18:54.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Tricks and Tips on Hexo">
-<meta name="twitter:description" content="Tricks and Tips on Hexo">
+<meta name="twitter:title" content="Kubernetes Microservices with Docker">
+<meta name="twitter:description" content="Some tips on Kubernetes Microservices with Docker">
 
 
 
@@ -116,7 +116,7 @@
 
 
 
-  <title> Tricks and Tips on Hexo | 泡茶说 </title>
+  <title> Kubernetes Microservices with Docker | 泡茶说 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -256,7 +256,7 @@
             
             
               
-                Tricks and Tips on Hexo
+                Kubernetes Microservices with Docker
               
             
           </h1>
@@ -268,8 +268,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-28T19:14:10+00:00" content="2016-06-29">
-              2016-06-29
+            <time itemprop="dateCreated" datetime="2016-07-27T06:18:13+00:00" content="2016-07-27">
+              2016-07-27
             </time>
           </span>
 
@@ -282,8 +282,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/misc/" itemprop="url" rel="index">
-                    <span itemprop="name">misc</span>
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
                   </a>
                 </span>
 
@@ -298,8 +298,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/28/hexo-tricks/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/28/hexo-tricks/" itemprop="commentsCount"></span>
+                <a href="/2016/07/27/Kubernetes-microservices-with-docker/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/27/Kubernetes-microservices-with-docker/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -327,20 +327,46 @@
       
 
       
-        <p>Tricks and Tips on Hexo</p>
+        <p>Some tips on Kubernetes Microservices with Docker</p>
 <a id="more"></a>
-<h3 id="Tags-amp-Categories"><a href="#Tags-amp-Categories" class="headerlink" title="Tags &amp; Categories"></a>Tags &amp; Categories</h3><ul>
-<li>Next 主题需要手动生成 tags &amp; categories，使用 hexo new page tags(categories) 命令，以 page 为模版</li>
-<li>categories 分类，我通常只设置一个；据说设置多个时可能变成分级分类，而不是多个分类并列，未实践</li>
-<li>tags &amp; categories 是中文时，如果想要 url 中是英文，可以在 _config.yml 的 category_map &amp; tag_map 中设置</li>
+<h3 id="Why-Kubernetes"><a href="#Why-Kubernetes" class="headerlink" title="Why Kubernetes"></a>Why Kubernetes</h3><ul>
+<li>便于把多个协作的应用整合为服务</li>
+<li>便于 Scale 服务</li>
+<li>解决 Docker 跨机器容器之间的通讯问题</li>
 </ul>
-<h3 id="静态博客文件和代码分开版本管理"><a href="#静态博客文件和代码分开版本管理" class="headerlink" title="静态博客文件和代码分开版本管理"></a>静态博客文件和代码分开版本管理</h3><ul>
-<li>hexo g 生成的静态页面，通常在 master 分支管理</li>
-<li>源码另外在 src 分支管理</li>
+<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul>
+<li>Docker 的 Image / Container 不说了</li>
+<li>Node 就是不同的物理/虚拟机器，同分布式中的概念</li>
+<li>Pods 就是相互协作并提供服务的若干容器的组合，Pod 内的容器运行在同一个 Minion 上，视为统一管理单元，共享 volumes &amp; network &amp; ip</li>
+<li>RC (Replication Controllers) 控制 Pods 的 replica 数量，实现 Rescheduling &amp; Scaling.</li>
+<li>同一个 Node 同一个 Pods 的不同 replica 分别有各自的 network，<strong>提供完全相同的功能</strong> ；看起来就像是多个不同 Nodes 上分别启动了同一个 Pods</li>
+<li>Service 是真实应用服务的抽象，是由 RC 暴露出来的 Endpoints，同一个 Pods 的不同 Replica 分别有各自的 Endpoint</li>
+<li>Pods / RC / Service 通过标签 Labels (key/value pair in nature) 相互识别</li>
+<li>Kubernetes 创建和管理服务的方式有两种：命令式和声明式；声明式采用配置文件，更灵活，更可控，功能也更多</li>
 </ul>
-<h3 id="SEO-搜索引擎优化"><a href="#SEO-搜索引擎优化" class="headerlink" title="SEO 搜索引擎优化"></a>SEO 搜索引擎优化</h3><p>参见<br><a href="http://www.arao.me/2015/hexo-next-theme-optimize-seo/" target="_blank" rel="external">动动手指，不限于NexT主题的Hexo优化（SEO篇）</a><br><a href="http://www.jianshu.com/p/619dab2d3c08" target="_blank" rel="external">hexo干货系列：（六）hexo提交搜索引擎（百度+谷歌）</a></p>
-<h3 id="常见问题解决"><a href="#常见问题解决" class="headerlink" title="常见问题解决"></a>常见问题解决</h3><p>Refer: <a href="http://theme-next.iissnan.com/faqs.html" target="_blank" rel="external">常见问题</a></p>
-<h5 id="TypeError-Cannot-set-property-‘lastIndex’-of-undefined"><a href="#TypeError-Cannot-set-property-‘lastIndex’-of-undefined" class="headerlink" title="TypeError: Cannot set property ‘lastIndex’ of undefined"></a>TypeError: Cannot set property ‘lastIndex’ of undefined</h5><p>这个错误在 hexo g 生成静态网页时发生，在 _config.yml 中，找到 auto_detect 并设置为 false，解决</p>
+<h3 id="集群中使用-Kubernates"><a href="#集群中使用-Kubernates" class="headerlink" title="集群中使用 Kubernates"></a>集群中使用 Kubernates</h3><p>先说下 Docker 的 network: 在 1.9 之后，Docker 通过 network 可以使得同一个 Node 节点上的多个容器通过其名字相互识别，相当于多个容器各自有不同的 ip</p>
+<p>但是，多个 Nodes 上启动多个容器，能够通过 network 相互识别并协同工作么？目前我还没找到合适的方法。</p>
+<p>使用 Kubernetes 集群，并 hack Docker 的默认网络设置，可以达到这个目的！具体步骤简略的说，如下：</p>
+<ul>
+<li>Install Master Kubernetes Node<ul>
+<li>Install Docker</li>
+<li>Setup bootstrap instance of Docker, 这是指启动一个新的 Docker instance, 方法是指定 -H unix:///xxxxxx.sock，和默认的 Docker Instance 并存</li>
+<li>通过新的 Docker Instance 安装 Etcd，一个分布式 key/value Store，用于维护分布式集群的网络信息</li>
+<li>停止默认的 Docker Instance，然后通过新的 Docker Instance 安装 Flannel，后者会启动一个网络环境，记录在 /run/flannel/subnet.env</li>
+<li>修改默认的 Docker 配置，把 DOCKER_OPT 中的网络配置成 Flannel 启动的网络</li>
+<li>安装 bridge-util，并删除 Docker 安装上的默认的 docker0 subnet</li>
+<li>重新启动默认的 Docker Instance，那么此时这个 Docker 使用的就是 Flannel 创建的子网络</li>
+<li>安装 Kubernetes 及其 Service Proxy</li>
+</ul>
+</li>
+<li>Install Worker Kubernetes Node，完全类似上面，只是有一些不同<ul>
+<li>不需要安装 Etcd 了</li>
+<li>安装 Flannel 的时候需要指定 Master Ip</li>
+</ul>
+</li>
+</ul>
+<p>至此，Kubernetes 集群安装完毕，可以使用 kubectl get nodes 来确认集群节点都 OK，并可以管理 Pods 和 Services 了</p>
+<h3 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h3><p>这本书 3+ 分吧，不能再多了，基本上就是操作手册，对于熟悉工具还是有一定帮助的，只不过实在是太啰嗦了，全书的知识点有限得很</p>
 
       
     </div>
@@ -362,9 +388,15 @@
       
         <div class="post-tags">
           
-            <a href="/tags/hexo/" rel="tag">#hexo</a>
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
           
-            <a href="/tags/blog/" rel="tag">#blog</a>
+            <a href="/tags/Kubernetes/" rel="tag">#Kubernetes</a>
+          
+            <a href="/tags/Docker/" rel="tag">#Docker</a>
+          
+            <a href="/tags/Microservice/" rel="tag">#Microservice</a>
+          
+            <a href="/tags/分布式/" rel="tag">#分布式</a>
           
         </div>
       
@@ -373,17 +405,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/06/28/7concurrent-models-in-7weeks-part2/" rel="next" title="7周7并发模型 P2 - FP with Clojure">
-                <i class="fa fa-chevron-left"></i> 7周7并发模型 P2 - FP with Clojure
+              <a href="/2016/07/06/7concurrent-models-in-7weeks-part6/" rel="next" title="7周7并发模型 P6 - Data Parallelism with GPU">
+                <i class="fa fa-chevron-left"></i> 7周7并发模型 P6 - Data Parallelism with GPU
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/07/01/7concurrent-models-in-7weeks-part5/" rel="prev" title="7周7并发模型 P5 - CSP with Clojure">
-                7周7并发模型 P5 - CSP with Clojure <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -409,8 +437,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/06/28/hexo-tricks/"
-           data-title="Tricks and Tips on Hexo" data-url="http://ijustloveses.github.io/2016/06/28/hexo-tricks/">
+      <div class="ds-thread" data-thread-key="2016/07/27/Kubernetes-microservices-with-docker/"
+           data-title="Kubernetes Microservices with Docker" data-url="http://ijustloveses.github.io/2016/07/27/Kubernetes-microservices-with-docker/">
       </div>
     
   </div>
@@ -519,7 +547,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Tags-amp-Categories"><span class="nav-number">1.</span> <span class="nav-text">Tags & Categories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态博客文件和代码分开版本管理"><span class="nav-number">2.</span> <span class="nav-text">静态博客文件和代码分开版本管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SEO-搜索引擎优化"><span class="nav-number">3.</span> <span class="nav-text">SEO 搜索引擎优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见问题解决"><span class="nav-number">4.</span> <span class="nav-text">常见问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TypeError-Cannot-set-property-‘lastIndex’-of-undefined"><span class="nav-number">4.0.1.</span> <span class="nav-text">TypeError: Cannot set property ‘lastIndex’ of undefined</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Why-Kubernetes"><span class="nav-number">1.</span> <span class="nav-text">Why Kubernetes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群中使用-Kubernates"><span class="nav-number">3.</span> <span class="nav-text">集群中使用 Kubernates</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价"><span class="nav-number">4.</span> <span class="nav-text">评价</span></a></li></ol></div>
             
           </div>
         </section>
