@@ -1,0 +1,705 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="笔记,Go,Docker,Microservice,Influxdb,Grafana,Metrics," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Metrics in Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Microservices in Go - Part I.">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/08/25/Microservice-in-go-part1/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Metrics in Go">
+<meta property="og:updated_time" content="2016-08-25T07:56:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Microservices in Go - Part I.">
+<meta name="twitter:description" content="Metrics in Go">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> Microservices in Go - Part I. | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Microservices in Go - Part I.
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-25T07:47:13+00:00" content="2016-08-25">
+              2016-08-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Microservice/" itemprop="url" rel="index">
+                    <span itemprop="name">Microservice</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/25/Microservice-in-go-part1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/25/Microservice-in-go-part1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Metrics in Go</p>
+<a id="more"></a>
+<h3 id="初步搭建可运行环境-–-metrics-server"><a href="#初步搭建可运行环境-–-metrics-server" class="headerlink" title="初步搭建可运行环境  – metrics_server"></a>初步搭建可运行环境  – metrics_server</h3><h5 id="influxdb-amp-grafana-docker-containers"><a href="#influxdb-amp-grafana-docker-containers" class="headerlink" title="influxdb &amp; grafana docker containers"></a>influxdb &amp; grafana docker containers</h5><ul>
+<li>influxdb - json timeseries database</li>
+<li>grafana - charts</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --name influxdb -d -p 8083:8083 -p 8086:8086 -e PRE_CREATE_DB=&quot;metric&quot; tutum/influxdb</span><br><span class="line">$ docker run --name grafana -d --link influxdb:influxdb </span><br><span class="line">    -e INFLUXDB_HOST=influxdb </span><br><span class="line">    -e INFLUXDB_PORT=8086 </span><br><span class="line">    -e INFLUXDB_NAME=metric         &lt;--- 上面 influxdb container 启动时，预创建数据库 metric</span><br><span class="line">    -e INFLUXDB_USER=root </span><br><span class="line">    -e INFLUXDB_PASS=root </span><br><span class="line">    -p 3300:80 hyperworks/grafana</span><br><span class="line"></span><br><span class="line">$ docker images</span><br><span class="line">docker.io/tutum/influxdb                           latest              5d606dc14680        6 months ago        275.2 MB</span><br><span class="line">docker.io/hyperworks/grafana                       latest              c2d5108b41f0        15 months ago       260 MB</span><br><span class="line"></span><br><span class="line">$ docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                COMMAND             CREATED             STATUS              PORTS                                            NAMES</span><br><span class="line">461158dad923        hyperworks/grafana   &quot;/run.sh&quot;           6 hours ago         Up 6 hours          0.0.0.0:3300-&gt;80/tcp                             grafana</span><br><span class="line">48681f0bddd1        tutum/influxdb       &quot;/run.sh&quot;           6 hours ago         Up 6 hours          0.0.0.0:8083-&gt;8083/tcp, 0.0.0.0:8086-&gt;8086/tcp   influxdb</span><br></pre></td></tr></table></figure>
+<p><a href="http://10.88.147.128:8083/" target="_blank" rel="external">http://10.88.147.128:8083/</a> 可以看到 influxdb 的配置，以及运行一些查询和操作；另看到 influxdb 版本：v0.9.6</p>
+<p><a href="http://10.88.147.128:3300/" target="_blank" rel="external">http://10.88.147.128:3300/</a> 可以看到 grafana 的登录页面，可以使用 admin/admin 登录；另看到 grafana 版本：version: 2.0.2</p>
+<h5 id="golang-docker-container"><a href="#golang-docker-container" class="headerlink" title="golang docker container"></a>golang docker container</h5><p>为了找个小一些的，找了 go-1.7.0 + alpine<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull golang:1.7.0-alpine</span><br><span class="line"></span><br><span class="line">$ docker images</span><br><span class="line">docker.io/golang                                   1.7.0-alpine        52493611af1e        7 days ago          241.1 MB</span><br><span class="line"></span><br><span class="line">$ docker run -it --rm --name metrics_server -p 3000:3000 --link influxdb:influxdb golang:1.7.0-alpine sh</span><br><span class="line"></span><br><span class="line">查看环境</span><br><span class="line">/go # go env</span><br><span class="line">GOARCH=&quot;amd64&quot;</span><br><span class="line">GOHOSTARCH=&quot;amd64&quot;</span><br><span class="line">GOHOSTOS=&quot;linux&quot;</span><br><span class="line">GOOS=&quot;linux&quot;</span><br><span class="line">GOPATH=&quot;/go&quot;</span><br><span class="line">GOROOT=&quot;/usr/local/go&quot;</span><br><span class="line">GOTOOLDIR=&quot;/usr/local/go/pkg/tool/linux_amd64&quot;</span><br><span class="line">CC=&quot;gcc&quot;</span><br><span class="line">GOGCCFLAGS=&quot;-fPIC -m64 -pthread -fmessage-length=0&quot;</span><br><span class="line">CXX=&quot;g++&quot;</span><br><span class="line">CGO_ENABLED=&quot;1&quot;</span><br><span class="line">......</span><br><span class="line"></span><br><span class="line">试试看下载安装一个 go model</span><br><span class="line">/go # go get github.com/GeertJohan/go-metrics/influxdb</span><br><span class="line">go: missing Git command. See https://golang.org/s/gogetcmd</span><br><span class="line">失败了，原因是没有安装 git</span><br><span class="line"></span><br><span class="line">关闭容器，然后去掉 --rm 命令，再次启动</span><br><span class="line">$ docker run -it --name metrics_server -p 3000:3000 --link influxdb:influxdb golang:1.7.0-alpine sh</span><br><span class="line"></span><br><span class="line">安装 git</span><br><span class="line">/go # apk add --no-cache git</span><br><span class="line">fetch http://dl-cdn.alpinelinux.org/alpine/v3.4/main/x86_64/APKINDEX.tar.gz</span><br><span class="line">fetch http://dl-cdn.alpinelinux.org/alpine/v3.4/community/x86_64/APKINDEX.tar.gz</span><br><span class="line">(1/5) Installing libssh2 (1.7.0-r0)</span><br><span class="line">(2/5) Installing libcurl (7.50.1-r0)</span><br><span class="line">(3/5) Installing expat (2.1.1-r1)</span><br><span class="line">(4/5) Installing pcre (8.38-r1)</span><br><span class="line">(5/5) Installing git (2.8.3-r0)</span><br><span class="line">Executing busybox-1.24.2-r9.trigger</span><br><span class="line">OK: 22 MiB in 17 packages</span><br><span class="line"></span><br><span class="line">退出，然后使用 docker commit 把安装好 git 的容器提交为镜像</span><br><span class="line">$ docker commit metrics_server golang:1.7.0-alpine-git</span><br><span class="line">$ docker images</span><br><span class="line">golang                                             1.7.0-alpine-git    4c832d88245a        11 seconds ago      258.1 MB</span><br><span class="line">docker.io/golang                                   1.7.0-alpine        52493611af1e        7 days ago          241.1 MB</span><br><span class="line">............</span><br><span class="line"></span><br><span class="line">最后善后，把未 rm 的 metrics_server 容器 rm 掉</span><br><span class="line">$ docker rm metrics_server</span><br></pre></td></tr></table></figure></p>
+<h5 id="本地创建-HttpServer-测试项目-metrics-server-go"><a href="#本地创建-HttpServer-测试项目-metrics-server-go" class="headerlink" title="本地创建 HttpServer 测试项目 metrics_server.go"></a>本地创建 HttpServer 测试项目 metrics_server.go</h5><p>目录 /home/vagrant/workspace/myproj/microservices_in_go/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd /home/vagrant/workspace/myproj</span><br><span class="line">$ mkdir microservices_in_go</span><br><span class="line">$ cd microservices_in_go/</span><br></pre></td></tr></table></figure></p>
+<p>Http 服务器代码，这里只是搭建一个 metric 数据定时导入 influxdb 的框架，然而并没有添加任何事件的监控<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$ vim metrics_server.go</span><br><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;github.com/GeertJohan/go-metrics/influxdb&quot;</span><br><span class="line">    &quot;github.com/rcrowley/go-metrics&quot;</span><br><span class="line">    &quot;net/http&quot;</span><br><span class="line">    &quot;time&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func MetricToInfluxDB(d time.Duration) &#123;</span><br><span class="line">    go influxdb.Influxdb(metrics.DefaultRegistry, d, &amp;influxdb.Config&#123;    ==&gt;  goroutine to monitor metric and save into influxdb every d duration</span><br><span class="line">        Host: &quot;influxdb:8086&quot;,                                            ==&gt;  这个 go 脚本会放到容器中运行，而这个容器会 link influxdb 容器</span><br><span class="line">        Database: &quot;metric&quot;,</span><br><span class="line">        Username: &quot;root&quot;,</span><br><span class="line">        Password: &quot;root&quot;,</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func IndexHandler(w http.ResponseWriter, r *http.Request) &#123;          ==&gt;  handler to handle http request</span><br><span class="line">    w.WriteHeader(http.StatusOK)</span><br><span class="line">    w.Write([]byte(&quot;Hello World!&quot;))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    MetricToInfluxDB(time.Second * 1)</span><br><span class="line">    http.HandleFunc(&quot;/&quot;, IndexHandler)</span><br><span class="line">    http.ListenAndServe(&quot;:3000&quot;, nil)                               ==&gt; 外部可以通过 10.88.147.128 访问</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="在-docker-中启动-golang-容器运行-HttpServer"><a href="#在-docker-中启动-golang-容器运行-HttpServer" class="headerlink" title="在 docker 中启动 golang 容器运行 HttpServer"></a>在 docker 中启动 golang 容器运行 HttpServer</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it --rm --name metrics_server </span><br><span class="line">    -p 3000:3000                      ==&gt; 为了容器外访问 http server 的端口</span><br><span class="line">    --link influxdb:influxdb          ==&gt; 为了访问 influxdb</span><br><span class="line">    -v $&#123;PWD&#125;:/go                     ==&gt; 把当前目录映射到容器的默认初始目录 /go，目的是可以访问前面实现的 metrics_server.go</span><br><span class="line">    golang:1.7.0-alpine-git sh        ==&gt; 使用刚刚安装好 git 的 golang 镜像</span><br><span class="line"></span><br><span class="line">/go # go get github.com/GeertJohan/go-metrics/influxdb</span><br><span class="line">/go # go get github.com/rcrowley/go-metrics</span><br><span class="line"></span><br><span class="line">/go # ls</span><br><span class="line">metrics_server.go  pkg                src</span><br><span class="line"></span><br><span class="line">/go # go run metrics_server.go  报错！</span><br><span class="line">2016/08/25 01:41:57 Server returned (404): 404 page not found</span><br><span class="line">2016/08/25 01:41:57 Server returned (404): 404 page not found</span><br><span class="line">2016/08/25 01:41:57 Server returned (404): 404 page not found</span><br><span class="line">2016/08/25 01:41:57 Server returned (404): 404 page not found</span><br><span class="line">...............</span><br><span class="line"></span><br><span class="line">退出容器，容器由于 --rm 选项自动清除</span><br></pre></td></tr></table></figure>
+<p>经 google，发现 <a href="https://www.brianchristner.io/how-to-setup-docker-monitoring/" target="_blank" rel="external">How to setup Docker Monitoring</a> 评论区中有人说这是 influxdb:0.9 的问题</p>
+<p>故此尝试调整到 influxdb:0.8.8<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">关闭已有 0.9.6 的 influxdb 容器</span><br><span class="line">$ docker rm -f influxdb</span><br><span class="line"></span><br><span class="line">尝试运行 0.8.8 版本的 influxdb</span><br><span class="line">$ docker run --name influxdb -d -p 8083:8083 -p 8086:8086 -e PRE_CREATE_DB=&quot;metric&quot; tutum/influxdb:0.8.8</span><br><span class="line"></span><br><span class="line">然后再次运行 golang with git 容器</span><br><span class="line">$ docker run -it --rm --name metrics_server -p 3000:3000 --link influxdb:influxdb -v $&#123;PWD&#125;:/go golang:1.7.0-alpine-git sh</span><br><span class="line"></span><br><span class="line">这次不需要再 go get github models 了，因为上次 get 到的新 models 都放到当前目录的 pkg &amp; src 子目录下，而这个目录是通过 -v 和宿主连接，自动 persist</span><br><span class="line">/go # go run metrics_server.go</span><br></pre></td></tr></table></figure></p>
+<p>这次 http server 不再报错了</p>
+<p>然后在其他 shell 执行  $ curl 10.88.147.128:3000，看到输出  Hello World!  说明 Http Server 正常运行； 浏览器上也可以正常看到输出 Hello World! 了</p>
+<p>再次查看 influxdb web 管理界面，使用 root/root 可以正常登录，并看到 metric 数据库已经在列</p>
+<p>善后，清除不好用的 influxdb 0.9.6 版本： $ docker rmi ${label of influxdb:latest}</p>
+<p>至此，框架已经搭好，后面就是看看如何通过这个框架添加对事件的监控和统计了</p>
+<h3 id="监控事件"><a href="#监控事件" class="headerlink" title="监控事件"></a>监控事件</h3><h5 id="HttpServer-中添加事件"><a href="#HttpServer-中添加事件" class="headerlink" title="HttpServer 中添加事件"></a>HttpServer 中添加事件</h5><p>修改 metrics_server.go 中的代码</p>
+<p>定义两个全局变量，分别代表首页访问次数，以及首页响应时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var requestCounter metrics.Counter</span><br><span class="line">var responseTime metrics.Timer</span><br></pre></td></tr></table></figure></p>
+<p>IndexHandler() 函数中，加入两个全局变量的更新操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">requestCounter.Inc(1)</span><br><span class="line">startReqTime := time.Now()</span><br><span class="line">defer responseTime.Update(time.Since(startReqTime))</span><br><span class="line">......</span><br></pre></td></tr></table></figure></p>
+<p>显然， requestCounter 比较简单，每次访问直接 inc(1) 即可； responseTime 这个用到了 defer，这样在函数结束之前会根据函数开始时的时间来计算响应时间</p>
+<p>main() 函数中，初始化并注册事件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">requestCounter = metrics.NewCounter()</span><br><span class="line">metrics.Register(&quot;count_request&quot;, requestCounter)</span><br><span class="line"></span><br><span class="line">responseTime = metrics.NewTimer()</span><br><span class="line">metrics.Register(&quot;response_time&quot;, responseTime)</span><br><span class="line"></span><br><span class="line">MetricToInfluxDB(time.Second * 1)</span><br><span class="line">......</span><br></pre></td></tr></table></figure></p>
+<p>看到，事件注册之后，调用 MetricToInfluxDB 函数，这个函数会把 metrics.DefaultRegistry 中注册的事件数据传到 influxdb 的对应数据库 metric 中</p>
+<h5 id="启动-HttpServer"><a href="#启动-HttpServer" class="headerlink" title="启动 HttpServer"></a>启动 HttpServer</h5><p>这次在 docker run 中直接调用 go run metrics_server.go, 而不是像以前那样只是调用 sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">方法一：去掉 --rm，加上 -d，这样启动的容器在后台运行；之所以要去掉 --rm，是因为它和 -d 不兼容</span><br><span class="line">$ docker run -it -d --name metrics_server -p 3000:3000 --link influxdb:influxdb -v $&#123;PWD&#125;:/go golang:1.7.0-alpine-git go run metrics_server.go</span><br><span class="line"></span><br><span class="line">方法二：保留 --rm，不使用 -d，这样容器将直接在前台运行，整个 shell 阻塞住，一直等待接收请求</span><br><span class="line">$ docker run -it --rm --name metrics_server -p 3000:3000 --link influxdb:influxdb -v $&#123;PWD&#125;:/go golang:1.7.0-alpine-git go run metrics_server.go</span><br></pre></td></tr></table></figure></p>
+<p>这里采用方法一，于是可以直接在同一个 shell 中查询容器状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                      NAMES</span><br><span class="line">3bcec22768d0        golang:1.7.0-alpine-git   &quot;go run metrics_serve&quot;   14 seconds ago      Up 13 seconds       0.0.0.0:3000-&gt;3000/tcp                                     metrics_server</span><br><span class="line">db0eb6d58f8d        tutum/influxdb:0.8.8      &quot;/run.sh&quot;                3 hours ago         Up 3 hours          0.0.0.0:8083-&gt;8083/tcp, 0.0.0.0:8086-&gt;8086/tcp, 8084/tcp   influxdb</span><br><span class="line">461158dad923        hyperworks/grafana        &quot;/run.sh&quot;                29 hours ago        Up 29 hours         0.0.0.0:3300-&gt;80/tcp                                       grafana</span><br></pre></td></tr></table></figure></p>
+<h5 id="测试事件监控效果"><a href="#测试事件监控效果" class="headerlink" title="测试事件监控效果"></a>测试事件监控效果</h5><p>浏览器中连续访问 <a href="http://10.88.147.128:3000/" target="_blank" rel="external">http://10.88.147.128:3000/</a> 6 次<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">influxdb 网站 http://10.88.147.128:8083/ ，首页 Databases 部分，点击 metric 对应的 Explore Data，在查询页面中运行 **list series**，得到全部 series</span><br><span class="line">list_series_result</span><br><span class="line">time  name</span><br><span class="line">0     count_request.count</span><br><span class="line">0     response_time.timer</span><br></pre></td></tr></table></figure></p>
+<p>查询页面中查询 select value from response_time.timer，报错：ERROR: Field value doesn’t exist in series response_time.timer</p>
+<p>查询 select * from response_time.timer 得到一些图和表，发现 fields 中没有 value 字段，有的是 count 字段  (这个查询比较慢，要耐心 …)</p>
+<p>查询 select count from response_time.timer 得到 count 字段相关的图和表；下面去 grafana 中查看</p>
+<p>grafana 网站 <a href="http://10.88.147.128:3300/" target="_blank" rel="external">http://10.88.147.128:3300/</a> ，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Home -&gt; New (to create new dashboard) 进入新的 dashboard 页面</span><br><span class="line">点击左边的小条处 -&gt; Add Panel -&gt; Graph -&gt; Save Dashboard</span><br><span class="line">Graph 中间上方 &quot;no title (click here)&quot; 点击 -&gt; Edit 打开 Edit form</span><br><span class="line">选中 Metric Tab 页， Series 框输入 response_time.timer，select 框中选择 mean(count)，保持其他选项不变 (比如 group by time = 30s)</span><br><span class="line">得到时序图，哈哈哈</span><br><span class="line">`</span><br></pre></td></tr></table></figure></p>
+<p>同理还可以查看 count_request.count 相关的图表和数据，从略</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/Go/" rel="tag">#Go</a>
+          
+            <a href="/tags/Docker/" rel="tag">#Docker</a>
+          
+            <a href="/tags/Microservice/" rel="tag">#Microservice</a>
+          
+            <a href="/tags/Influxdb/" rel="tag">#Influxdb</a>
+          
+            <a href="/tags/Grafana/" rel="tag">#Grafana</a>
+          
+            <a href="/tags/Metrics/" rel="tag">#Metrics</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/27/Kubernetes-microservices-with-docker/" rel="next" title="Kubernetes Microservices with Docker">
+                <i class="fa fa-chevron-left"></i> Kubernetes Microservices with Docker
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/25/Microservice-in-go-part1/"
+           data-title="Microservices in Go - Part I." data-url="http://ijustloveses.github.io/2016/08/25/Microservice-in-go-part1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description">专注并发和机器学习</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github" rel="external nofollow">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#初步搭建可运行环境-–-metrics-server"><span class="nav-number">1.</span> <span class="nav-text">初步搭建可运行环境  – metrics_server</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#influxdb-amp-grafana-docker-containers"><span class="nav-number">1.0.1.</span> <span class="nav-text">influxdb & grafana docker containers</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#golang-docker-container"><span class="nav-number">1.0.2.</span> <span class="nav-text">golang docker container</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#本地创建-HttpServer-测试项目-metrics-server-go"><span class="nav-number">1.0.3.</span> <span class="nav-text">本地创建 HttpServer 测试项目 metrics_server.go</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在-docker-中启动-golang-容器运行-HttpServer"><span class="nav-number">1.0.4.</span> <span class="nav-text">在 docker 中启动 golang 容器运行 HttpServer</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#监控事件"><span class="nav-number">2.</span> <span class="nav-text">监控事件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#HttpServer-中添加事件"><span class="nav-number">2.0.1.</span> <span class="nav-text">HttpServer 中添加事件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#启动-HttpServer"><span class="nav-number">2.0.2.</span> <span class="nav-text">启动 HttpServer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试事件监控效果"><span class="nav-number">2.0.3.</span> <span class="nav-text">测试事件监控效果</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
