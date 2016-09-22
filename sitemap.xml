@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://ijustloveses.github.io/2016/09/22/HBase-intro/</loc>
+    
+    <lastmod>2016-09-22T05:11:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://ijustloveses.github.io/2016/08/25/Microservice-in-go-part1/</loc>
     
     <lastmod>2016-08-25T07:56:13.000Z</lastmod>
