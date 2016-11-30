@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://ijustloveses.github.io/"/>
-  <updated>2016-11-30T06:44:12.000Z</updated>
+  <updated>2016-11-30T07:20:37.000Z</updated>
   <id>http://ijustloveses.github.io/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Docker in Practice</title>
+    <title>Docker in Practice - Foundamental</title>
     <link href="http://ijustloveses.github.io/2016/11/30/Docker-in-Practice-Foundamental/"/>
     <id>http://ijustloveses.github.io/2016/11/30/Docker-in-Practice-Foundamental/</id>
     <published>2016-11-30T06:39:25.000Z</published>
-    <updated>2016-11-30T06:44:12.000Z</updated>
+    <updated>2016-11-30T07:20:37.000Z</updated>
     
     <content type="html">&lt;p&gt;Some Notes on 《Manning Docker in Practice》&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
