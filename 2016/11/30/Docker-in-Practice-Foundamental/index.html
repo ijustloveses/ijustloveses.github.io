@@ -1,0 +1,914 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="笔记,Docker," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="泡茶说" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Some Notes on 《Manning Docker in Practice》">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker in Practice">
+<meta property="og:url" content="http://ijustloveses.github.io/2016/11/30/Docker-in-Practice-Foundamental/index.html">
+<meta property="og:site_name" content="泡茶说">
+<meta property="og:description" content="Some Notes on 《Manning Docker in Practice》">
+<meta property="og:updated_time" content="2016-11-30T06:44:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker in Practice">
+<meta name="twitter:description" content="Some Notes on 《Manning Docker in Practice》">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> Docker in Practice | 泡茶说 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">泡茶说</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Docker in Practice
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-30T06:39:25+00:00" content="2016-11-30">
+              2016-11-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/30/Docker-in-Practice-Foundamental/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/30/Docker-in-Practice-Foundamental/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Some Notes on 《Manning Docker in Practice》</p>
+<a id="more"></a>
+<h1 id="Docker-fundamentals"><a href="#Docker-fundamentals" class="headerlink" title="Docker fundamentals"></a>Docker fundamentals</h1><h3 id="docker-diff"><a href="#docker-diff" class="headerlink" title="docker diff"></a>docker diff</h3><p>docker diff 命令用于查看容器启动后修改了哪些文件</p>
+<h3 id="docker-daemon-amp-client"><a href="#docker-daemon-amp-client" class="headerlink" title="docker daemon &amp; client"></a>docker daemon &amp; client</h3><p>Docker 安装后，其实在机器上安装了 daemon 和 client 两个程序</p>
+<ul>
+<li>client 用于接收用户的命令行输入，并传给 daemon</li>
+<li>daemon 真正维护 docker image/container/registry 等相关的内部逻辑</li>
+<li>client 和 daemon 之间的调用竟然是 HTTP RESTFUL API，daemon 和 DockerHub/其他Registry 之间当然也是 HTTP</li>
+</ul>
+<h3 id="允许-Docker-Daemon-被远程访问"><a href="#允许-Docker-Daemon-被远程访问" class="headerlink" title="允许 Docker Daemon 被远程访问"></a>允许 Docker Daemon 被远程访问</h3><p>默认 Docker 只能本地访问，这是因为 Docker Daemon 和 Docker Client 是通过 /var/run/docker.sock 本地文件 sock 来通信的</p>
+<p>Docker Client 也可以通过 TCP Socket 来访问 Docker Daemon，不过此时 Docker Daemon 暴露在网络中，处于不安全的状态，需谨慎使用这种情况</p>
+<ul>
+<li>关掉当前 Docker Daemon<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service docker stop 或者</span><br><span class="line">$ systemctl stop docker</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>使用下面的命令确认没有任何 Docker Daemon 输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep -E &apos;docker (-d|daemon)\b&apos; | grep -v grep</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>通过 TCP Socket 启动新的 Docker Daemon (故此不能使用 service docker start 这样的命令来启动)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker daemon -H tcp://0.0.0.0:2375    # 如果不行，试试 [-d] 选项</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Docker Client 连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker -H tcp://&lt;your host&apos;s ip&gt;:2375</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="容器运行为后台服务"><a href="#容器运行为后台服务" class="headerlink" title="容器运行为后台服务"></a>容器运行为后台服务</h3><p>通常 Linux 下的 Daemon 服务程序都是通过 nohup \<your command=""> &amp; 这种方式来实现的；不过，docker run 提供了 -d 选项，使得容器可以轻松运行为 Daemon</your></p>
+<p>Docker run 命令提供 –restart 选项控制服务失败的后处理</p>
+<ul>
+<li>–restart=no  容器退出后不重启</li>
+<li>–restart=always  容器退出后总是重启</li>
+<li>–restart=on-failure[:max-retry]  容器因为失败退出后重启，如果给定数字，那么只重启有限次数</li>
+</ul>
+<h3 id="设置-Docker-Storage-的位置"><a href="#设置-Docker-Storage-的位置" class="headerlink" title="设置 Docker Storage 的位置"></a>设置 Docker Storage 的位置</h3><ol>
+<li>停止当前 Docker Daemon 服务</li>
+<li>docker daemon -g &lt;新的 Storage 目录&gt;</li>
+</ol>
+<p>你会发现之前 Docker 的镜像和容器全部都消失掉了，没有关系，只要你杀掉调整位置后的 Docker 服务，再以通常的方式重启 Docker，一切恢复原样</p>
+<h3 id="使用-socat-作为-proxy-来监控-Docker-API-traffic"><a href="#使用-socat-作为-proxy-来监控-Docker-API-traffic" class="headerlink" title="使用 socat 作为 proxy 来监控 Docker API traffic"></a>使用 socat 作为 proxy 来监控 Docker API traffic</h3><p>如果想要调试或者研究 Docker 内部的 API 调用流，可以使用 socat 在 Docker Client 和 Docker Daemon 之间搭一个代理：</p>
+<blockquote>
+<p>Docker Client &lt;==&gt; Socat Unix Domain Socket Proxy &lt;==&gt; Docker Defaut Unix Domain Socket &lt;==&gt; Docker Daemon</p>
+</blockquote>
+<p>使用如下命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo socat -v UNIX-LISTEN:/tmp/dockerapi.sock UNIX-CONNECT:/var/run/docker.sock &amp;</span><br></pre></td></tr></table></figure></p>
+<p>-v 使输出可读；UNIX-LISTEN 表示 socat 监听 /tmp/dockerapi.sock；UNIX-CONNECT 表示 socket 连接默认 docker 的 socket，把监听到的请求转发过去；反过来，当接收到 docker 的 response 后，再通过 /tmp/dockerapi.sock 返回给 Docker Client，完成一个成功的请求响应过程</p>
+<p>以 docker ps -a 命令为例，Docker Client 的调用方法为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker -H unix:///tmp/dockerapi.sock ps -a</span><br></pre></td></tr></table></figure></p>
+<h3 id="Linking-containers"><a href="#Linking-containers" class="headerlink" title="Linking containers"></a>Linking containers</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run --name wp-mysql -e MYSQL_ROOT_PASSWORD=yoursecretpassword -d mysql</span><br><span class="line">docker run --name wordpress --link wp-mysql:mysql -p 10003:80 -d wordpress</span><br></pre></td></tr></table></figure>
+<p>注意，第二条命令要在第一条命令执行之后再等一下才能运行，否则第一个容器还没准备好，第二个命令中的 link 就无效了；使用 docker-compose to rescue !</p>
+<p>另外，像上面命令中这样的 setup，需要在 Dockerfile 中 EXPOSE 端口号</p>
+<h3 id="Setting-up-a-local-Docker-registry"><a href="#Setting-up-a-local-Docker-registry" class="headerlink" title="Setting up a local Docker registry"></a>Setting up a local Docker registry</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 5000:5000 -v $HOME/registry:/var/lib/registry registry:2</span><br></pre></td></tr></table></figure>
+<p>如果 Docker Client 在 docker push 或者其他访问时出问题，试试看在启动 Docker Daemon 时加入 –insecure-registry HOSTNAME 选项</p>
+<h3 id="管理容器内服务的启动"><a href="#管理容器内服务的启动" class="headerlink" title="管理容器内服务的启动"></a>管理容器内服务的启动</h3><p>通常我们使用 crontab 来控制系统服务的启动，然而这个对于容器来说并不理想，会导致很多问题</p>
+<p>相应的，应该使用 Supervisor 来控制服务的启动，通过 pip install supervisor 安装，并通过 /etc/supervisord.conf 配置文件来管理</p>
+<h3 id="docker-commit-只能提交文件系统的修改"><a href="#docker-commit-只能提交文件系统的修改" class="headerlink" title="docker commit 只能提交文件系统的修改"></a>docker commit 只能提交文件系统的修改</h3><p>docker commit 只能提交文件系统的修改，不能保存容器内正在运行中的进程，也不能保存数据库、Docker volumns 等外部依赖组件</p>
+<h3 id="Referring-to-a-specific-image-in-builds"><a href="#Referring-to-a-specific-image-in-builds" class="headerlink" title="Referring to a specific image in builds"></a>Referring to a specific image in builds</h3><p>在 build Docker 镜像时，我们都是基于 (FROM) 一个已有的镜像。我们知道，通过镜像 name/repository/tag 都无法真正限制一个镜像保持不变，那么如何让 build 时真正基于一个确定性的镜像呢？</p>
+<p>答案是使用镜像 id，比如 FROM 8eaa4ff06b53</p>
+<p>更厉害的是，这个镜像 id 甚至不需要有 name/repositary/tag，可以是本地 build 任何镜像时任意步骤所产生的中间镜像 id</p>
+<h3 id="Volumn-的一些注意事项"><a href="#Volumn-的一些注意事项" class="headerlink" title="Volumn 的一些注意事项"></a>Volumn 的一些注意事项</h3><p>比如 docker run -v /var/db/tables:/var/data1 -it debian bash</p>
+<ul>
+<li>host 的 /var/db/tables 目录 mount 到容器中的 /var/data1 目录</li>
+<li>如果 /var/db/tables 或者 /var/data1 目录不存在，那么在容器启动的时候会创建</li>
+<li>如果 /var/data1 目录本来就在镜像中存在，那么在容器启动时，该目录会被消失，并被重新 mount 到 host 的 /var/db/tables；故此切忌使用容器的关键目录</li>
+<li>Selinux 可能会影响 volumn，比如报错 permission denied</li>
+</ul>
+<h3 id="如何保留容器中的-Bash-History"><a href="#如何保留容器中的-Bash-History" class="headerlink" title="如何保留容器中的 Bash History"></a>如何保留容器中的 Bash History</h3><p>方法是使用 Volumn 把容器中的 History 文件共享给 host<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -e HIST_FILE=/root/.bash_history \               # 这里设置 History 文件环境变量</span><br><span class="line">  -v=$HOME/.bash_history:/root/.bash_history \              # 这里把 History 文件 mount 到 host 的 ~/.bash_history 文件</span><br><span class="line">  -ti ubuntu /bin/bash</span><br></pre></td></tr></table></figure></p>
+<p>如果想避免把容器的 History 文件和 host 的 History 文件混合在一起，可以把 host 目录设置到另外的地方即可</p>
+<p>如果想避免写这么长的 docker run 命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alias dockbash=&apos;docker run -e HIST_FILE=/root/.bash_history \</span><br><span class="line">  -v=$HOME/.bash_history:/root/.bash_history</span><br></pre></td></tr></table></figure></p>
+<p>然而，这样就得用 dockbash 代替 docker run 了，这样不够好，不够 seamless；</p>
+<p>可以在 ~/.bashrc 中添加下面代码，就完美无缝了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function basher() &#123;            # 定义函数 basher</span><br><span class="line">  if [[ $1 = &apos;run&apos; ]]          # 如果首个参数是 run</span><br><span class="line">  then</span><br><span class="line">    shift                      # 移除第一个参数，也就是说去掉 run 参数，剩下的就是 docker run 的其他参数了</span><br><span class="line">    /usr/bin/docker run \      # 运行 docker run，注意使用绝对路径去找 docker</span><br><span class="line">      -e HIST_FILE=/root/.bash_history \</span><br><span class="line">      -v $HOME/.bash_history:/root/.bash_history &quot;$@&quot;        # 配置 History 目录，并指定 docker run 剩下的参数</span><br><span class="line">  else</span><br><span class="line">    /usr/bin/docker &quot;$@&quot;       # 否则，不移除首参数，正常运行原命令；仍然指定 docker 绝对路径</span><br><span class="line">  fi</span><br><span class="line">&#125;</span><br><span class="line">alias docker=basher            # 最后，docker 设置为别名，每次调用 docker 命令就会调用 basher 函数，实现对 docker 的覆盖</span><br></pre></td></tr></table></figure></p>
+<p>最后，推出当前 bash session，重进，更新 History 设置</p>
+<h3 id="Data-Only-Container-–-Docker-常见模式之一"><a href="#Data-Only-Container-–-Docker-常见模式之一" class="headerlink" title="Data-Only Container – Docker 常见模式之一"></a>Data-Only Container – Docker 常见模式之一</h3><p>启动 Data-Only Container<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -v /shared-data --name dc busybox touch /shared-data/somefile</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>-v /shared-data 由于没有指定 host 目录，故此它只是在容器中创建一个目录，以供 mount 使用。(相当于 Dockerfile 中指定 VOLUMN 指令的值)</li>
+<li>touch /shared-data/somefile 在指定的目录中创建一个文件，然后命令就结束了，也就是说容器退出了(exit)；要注意，即使容器退出，Data-Only 容器仍然会起作用</li>
+<li>为了减少容器 size，使用了 busybox</li>
+</ul>
+<p>通过 –volumns-from 选项，启动 Data-Only Container 的引用容器，自动 mount 上 /share-data 目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -i --volumes-from dc busybox /bin/sh</span><br><span class="line">/ # ls /shared-data</span><br><span class="line">somefile</span><br></pre></td></tr></table></figure></p>
+<p>当所有 Data-Only 容器的引用容器都退出之后，Data-Only 容器才会清空 Volumn；然而，这一点并不能保证，经常会看到 /data/docker/volumes/ 目录 (或者其他指定的 docker volumes 目录) 中遗留着历史 volumes 文件，导致空间占满的现象，可以清理如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume ls -qf dangling=true | xargs -r docker volume rm</span><br><span class="line">或者 docker volume rm $(docker volume ls -qf dangling=true)</span><br></pre></td></tr></table></figure></p>
+<p>参考 <a href="https://lebkowski.name/docker-volumes/" target="_blank" rel="external">Cleaning up docker to reclaim disk space</a></p>
+<p>当存在多个引用容器，尽量使每个容器访问独立的文件或目录，以避免数据损失；也要注意避免名称冲突</p>
+<h3 id="通过-BitTorrent-Sync-让-data-container-的-volumn-能够自动和远程数据源同步"><a href="#通过-BitTorrent-Sync-让-data-container-的-volumn-能够自动和远程数据源同步" class="headerlink" title="通过 BitTorrent Sync 让 data container 的 volumn 能够自动和远程数据源同步"></a>通过 BitTorrent Sync 让 data container 的 volumn 能够自动和远程数据源同步</h3><p>远程数据源 host 启动一个 btsync 容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[host1]$ docker run -d -p 8888:8888 -p 55555:55555 --name btsync ctlc/btsync</span><br><span class="line">[host1]$ docker logs btsync</span><br><span class="line">Starting btsync with secret: ALSVEUABQQ5ILRS2OQJKAOKCU5SIIP6A3            &lt;-- key，供客户端连接使用</span><br><span class="line">.................</span><br></pre></td></tr></table></figure></p>
+<p>远程数据源 host 启动容器，link btsync 容器，用于控制和配置需要同步的数据源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[host1]$ docker run -i -t --volumes-from btsync ubuntu /bin/bash</span><br><span class="line">[host1]$ touch /data/shared_from_server_one          &lt;--- 看到，默认的 mount 目录为 /data/，我们在目录中配置了一个新数据文件</span><br></pre></td></tr></table></figure></p>
+<p>类似的，本地 host 启动 btsync 客户端容器用于同步 btsync 服务器容器，再启动一个容器 link 客户端容器，用于读取和更改数据源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[host2]$ docker run -d --name btsync-client -p 8888:8888 -p 55555:55555 \</span><br><span class="line">ctlc/btsync ALSVEUABQQ5ILRS2OQJKAOKCU5SIIP6A3             &lt;--- 这里指定了 key，用于连接 btsync 服务器</span><br><span class="line"></span><br><span class="line">[host2]$ docker run -i -t --volumes-from btsync-client ubuntu bash     &lt;-- 启动容器 link btsync 客户端</span><br><span class="line">[host2]$ ls /data</span><br><span class="line">shared_from_server_one</span><br><span class="line">[host2]$ touch /data/shared_from_server_two         &lt;--- 创建新文件</span><br><span class="line">[host2]$ ls /data</span><br><span class="line">shared_from_server_one shared_from_server_two</span><br></pre></td></tr></table></figure></p>
+<p>回到数据源 host，应该也能看到新建的 shared_from_server_two，从略</p>
+<p>简单的说，就是启动 btsync server &amp; client 容器用于同步数据，然后 server &amp; client 所在 host 各启动一个 app 容器，link 对应的 btsync 容器，操纵已经同步的数据</p>
+<p>本方法不能保证时间上的可靠性，可能需要等待一段时间以供同步所需，在安全性、可扩展性和性能上，都有一定的局限</p>
+<h3 id="通过-SSHFS-直接-mount-远程-volume"><a href="#通过-SSHFS-直接-mount-远程-volume" class="headerlink" title="通过 SSHFS 直接 mount 远程 volume"></a>通过 SSHFS 直接 mount 远程 volume</h3><p>前面的技巧是通过同步来把远程数据源更新到本地，再使用 Data-Only 容器来访问；那么能否直接 mount 远程数据源呢？答案是肯定的，通常有两种方法：NFS 或者 SSHFS。这里先介绍 SSHFS，下面一节介绍 NFS</p>
+<p>SSHFS 的方法需要 root 权限，并安装 FUSE (Linux’s “Filesystem in Userspace” kernel module)，后者可以根据是否存在 /dev/fuse 来判断。SSHFS + FUSE kernel 通过内部的 SSH 连接，提供了一套文件系统的标准接口，让你可以正常访问远程文件。由于直连远程文件，故此不会有 local container-level persistence，文件修改都发生在远程数据源。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -t -i --privileged debian /bin/bash        &lt;-- 如上面所说，需要 root 权限</span><br><span class="line"></span><br><span class="line">容器内部</span><br><span class="line">$ apt-get update &amp;&amp; apt-get install sshfs        &lt;-- 安装 sshfs</span><br><span class="line">$ sshfs user@host:/path/to/local/directory $&#123;localpath&#125;    &lt;-- 把远程文件数据源 mount 到本地</span><br></pre></td></tr></table></figure>
+<p>搞定，远程数据源服务器只要有 ssh service 就可以了，基本不需要做额外配置</p>
+<p>当然，还可以把 ${localpath} 暴露出去，让本地容器成为 Data-Only 容器，供其他 app 容器 link。总之 ${localpath} 就和本地目录完全同等看待</p>
+<p>如果要 unmount，非常简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fusermount -u $&#123;localpath&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="通过-NFS-直接-mount-远程-volume"><a href="#通过-NFS-直接-mount-远程-volume" class="headerlink" title="通过 NFS 直接 mount 远程 volume"></a>通过 NFS 直接 mount 远程 volume</h3><p>前面 SSHFS 的方法优点在于配置简单：远程数据源有 SSH 即可；本地需要预先安装 FUSE；本地容器内安装 SSHFS。</p>
+<p>NFS 方法的话，很多大些的公司内部都已经在使用 NFS 共享目录，那么可以配置一个容器来安装 NFS 客户端 mount 远程共享目录，同时作为 Data-Only 容器向其他 app 容器提供 volume 数据服务</p>
+<p>数据源 host 的配置 (比较简略，详细的需要查询 NFS 文档<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># apt-get install nfs-kernel-server      &lt;-- 安装 nfs 服务，注意是 root 权限</span><br><span class="line"># mkdir /export &amp;&amp; chmod 777 /export &amp;&amp; mount --bind /opt/test/db /export      &lt;-- 把数据目录 mount 到 /export</span><br><span class="line"></span><br><span class="line">在 /etc/fstab file 文件中加入</span><br><span class="line">/opt/test/db /export none bind 0 0       &lt;-- 重启后仍然保持 mount</span><br><span class="line"></span><br><span class="line">在 /etc/exports 文件中加入</span><br><span class="line">/export 127.0.0.1(ro,fsid=0,insecure,no_subtree_check,async)     &lt;-- 配置 NFS</span><br><span class="line">这里限制为本地访问；现实中可以配置能够访问的 ip 段，或者 * 号不设置权限；还可以设置 ro 为 rw 等，配置不同的权限粒度</span><br><span class="line"></span><br><span class="line"># exportfs -a</span><br><span class="line"># service nfs-kernel-server restart</span><br></pre></td></tr></table></figure></p>
+<p>本地 Data-Only 容器的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># mount -t nfs 127.0.0.1:/export /mnt     &lt;-- 本例中是本地配置的 NFS 服务，现实中改为真实 ip</span><br><span class="line"># docker run -ti --name nfs_client --privileged -v /mnt:/mnt busybox /bin/true      &lt;-- 注意有 privileged 选项</span><br></pre></td></tr></table></figure></p>
+<p>本地其他 app 容器连接<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># docker run -ti --volumes-from nfs_client debian /bin/bash</span><br></pre></td></tr></table></figure></p>
+<p>相比起来，服务器端的配置麻烦，而 Data-Only 容器的配置简单很多，因为 mount 过来后，就可以完全当作本地文件了</p>
+<h3 id="容器使用-host-的资源"><a href="#容器使用-host-的资源" class="headerlink" title="容器使用 host 的资源"></a>容器使用 host 的资源</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -i \</span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock \     &lt;-- 容器内可以使用 docker 命令，充当 host 的 Docker Daemon</span><br><span class="line">-v /tmp/.X11-unix:/tmp/.X11-unix \                 &lt;-- 容器内可以使用 host 的显示设备来访问 GUI 程序</span><br><span class="line">-e DISPLAY=$DISPLAY \</span><br><span class="line">--net=host --ipc=host \                            &lt;-- 容器内可以使用本地网络和 ipc；--net 默认值为 bridge</span><br><span class="line">-v /opt/workspace:/home/dockerinpractice \</span><br><span class="line">dockerinpractice/docker-dev-tools-image</span><br></pre></td></tr></table></figure>
+<h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker inspect 0808ef13d450</span><br><span class="line">docker inspect --format &apos;&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;&apos; 0808ef13d450</span><br><span class="line">docker ps -q | xargs docker inspect --format=&apos;&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;&apos; | xargs -l1 ping -c1</span><br></pre></td></tr></table></figure>
+<h3 id="清理容器"><a href="#清理容器" class="headerlink" title="清理容器"></a>清理容器</h3><p>一句话：使用 docker stop 而不要用 docker kill</p>
+<p>具体的说，docker stop 和 unix 命令 kill 一样，都会给进程发送 TERM 信号；而 docker kill 则是发送 KILL 信号</p>
+<p>区别在于，进程收到 TERM 信号后可以做一些 cleanup 工作再退出；而 KILL 信号则强迫进程立即退出，可能导致问题</p>
+<h3 id="Docker-Machine"><a href="#Docker-Machine" class="headerlink" title="Docker Machine"></a>Docker Machine</h3><p>docker-machine 是一个工具，用来方便的创建和管理 docker host。它支持多种 docker host 环境，并提供统一的命令，方便用户的使用 (不同类型的 host 可用命令数会不同，比如 virtualbox 只有 3 个命令，而 openstack 则支持 17 个)</p>
+<p>比如创建 virtualbox 环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine create --driver virtualbox host1        &lt;-- 会创建 virtualbox + boot2docker.iso 镜像环境</span><br><span class="line">$ eval $(docker-machine env host1)           &lt;-- 设置默认 docker 环境变量</span><br><span class="line">$ docker ps -a</span><br><span class="line">CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES    &lt;-- 还没有 docker 容器</span><br><span class="line">$ docker-machine ssh host1                   &lt;-- 登录 host1</span><br></pre></td></tr></table></figure></p>
+<h3 id="Dockerfile-之-ADD"><a href="#Dockerfile-之-ADD" class="headerlink" title="Dockerfile 之 ADD"></a>Dockerfile 之 ADD</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://www.flamingspork.com/projects/libeatmydata/libeatmydata-105.tar.gz &gt; my.tar.gz</span><br><span class="line"></span><br><span class="line">在 Dockerfile 中加入</span><br><span class="line">FROM debian</span><br><span class="line">RUN mkdir -p /opt/libeatmydata</span><br><span class="line">ADD my.tar.gz /opt/libeatmydata/</span><br><span class="line">RUN ls -lRt /opt/libeatmydata</span><br><span class="line"></span><br><span class="line">$ docker build --no-cache .</span><br><span class="line">.................</span><br><span class="line">Step 3 : RUN ls -lRt /opt/libeatmydata</span><br><span class="line">---&gt; Running in e3283848ad65</span><br><span class="line">/opt/libeatmydata:</span><br><span class="line">total 4</span><br><span class="line">drwxr-xr-x 7 1000 1000 4096 Oct 29 23:02 libeatmydata-105       &lt;-- 看到 tar.gz 文件自动解压了</span><br><span class="line">.................</span><br></pre></td></tr></table></figure>
+<p>Docker 会自动解压常见的标准压缩文件，包括并不仅限于 gz, bz2, xz, tar。但是，前提是你已经下载为本地文件了才行，否则不会自动解压，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FROM debian</span><br><span class="line">RUN mkdir -p /opt/libeatmydata</span><br><span class="line">ADD https://www.flamingspork.com/projects/libeatmydata/libeatmydata-105.tar.gz /opt/libeatmydata/</span><br><span class="line">RUN ls -lRt /opt/libeatmydata</span><br></pre></td></tr></table></figure>
+<p>这个就不会自动解压</p>
+<p>另外，注意到 ADD 的目的目录最后有一个斜杠 /，表示这是个目录；如果没有这个斜杠，那么 Docker 会把 /opt/libeatmydata 当作一个文件名，并把下载的文件保存为这个文件名</p>
+<p>如果你就不希望自动解压缩，那么使用 Dockerfile 的 COPY 命令即可</p>
+<h3 id="Docker-build-过程中的-cache"><a href="#Docker-build-过程中的-cache" class="headerlink" title="Docker build 过程中的 cache"></a>Docker build 过程中的 cache</h3><p>在重新 build Docker 镜像的时候，如果 Dockerfile 没有发生改变，那么 Docker 会默认使用 cache，不会真正重新执行命令</p>
+<p>如果不希望使用 cache，那么使用 –no-cache 选项，如 </p>
+<blockquote>
+<p>docker build –no-cache .</p>
+</blockquote>
+<p>如果希望有一些更 fine-grained 的控制呢？比如希望从某个点开始不使用 cache? 可以通过修改 Dockerfile 的方式来实现</p>
+<p>Docker 的规则是，只要 Dockerfile 发生了字符级别的改变，那么就从改变发生的位置起，不再使用 cache。注意，字符级别的改变，意味着即使我们只是添加了一条 comment、一个空格，那么也会被认为 Dockerfile 改变，继而不再使用 cache</p>
+<h3 id="Running-Docker-without-sudo"><a href="#Running-Docker-without-sudo" class="headerlink" title="Running Docker without sudo"></a>Running Docker without sudo</h3><p>通常用户在前台需要使用 sudo 来调用 docker 命令。如何避免使用 sudo 呢？加入 docker group</p>
+<blockquote>
+<p>$ sudo addgroup -a username docker</p>
+</blockquote>
+<p>退出 shell 再进，就可以不使用 sudo 了</p>
+<h3 id="清理-Containers"><a href="#清理-Containers" class="headerlink" title="清理 Containers"></a>清理 Containers</h3><p>清理全部容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps -a -q | xargs --no-run-if-empty docker rm -f</span><br></pre></td></tr></table></figure></p>
+<p>–no-run-if-empty 选项表示如果前面的命令没有返回，那么就不运行后面的命令； -f 表示即使运行中的容器也 force remove</p>
+<p>清理 exited 的容器，既然已经 exited 了，就不需要 -f 了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a -q --filter status=exited | xargs --no-run-if-empty docker rm</span><br></pre></td></tr></table></figure></p>
+<p>查看全部错误退出的容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">comm -3 \                  &lt;-- comm 命令比较两个文件内容，-3 选项清除两个文件中都有的行</span><br><span class="line">&lt;(docker ps -a -q --filter=status=exited | sort) \     &lt;-- &quot;&lt;(command)&quot; 会执行命令，并把结果看待为一个文件</span><br><span class="line">&lt;(docker ps -a -q --filter=exited=0 | sort) | \        &lt;-- 得到 exited 和 exited=0 的两个结果文件，作为 comm 参数</span><br><span class="line">xargs --no-run-if-empty docker inspect &gt; error_containers    &lt;-- 两个文件去除重复行后，剩下的就是 exited 非零的容器了</span><br></pre></td></tr></table></figure></p>
+<h3 id="Detaching-containers-without-stopping-them"><a href="#Detaching-containers-without-stopping-them" class="headerlink" title="Detaching containers without stopping them"></a>Detaching containers without stopping them</h3><p>有时运行 docker 容器时，会遇到这种情况：如果退出 shell，那么容器也会跟着退出。如何 detach 而不会 stop 容器呢？</p>
+<blockquote>
+<p>Press Ctrl-P and then Ctrl-Q to detach.</p>
+</blockquote>
+<h3 id="使用-DockerUI-来管理-Docker-Daemon"><a href="#使用-DockerUI-来管理-Docker-Daemon" class="headerlink" title="使用 DockerUI 来管理 Docker Daemon"></a>使用 DockerUI 来管理 Docker Daemon</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d -p 9000:9000 --privileged -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui</span><br></pre></td></tr></table></figure>
+<h3 id="生成-Docker-images-间的依赖图"><a href="#生成-Docker-images-间的依赖图" class="headerlink" title="生成 Docker images 间的依赖图"></a>生成 Docker images 间的依赖图</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock dockerinpractice/docker-image-graph &gt; docker_images.png</span><br></pre></td></tr></table></figure>
+<h3 id="docker-exec-的三种模式"><a href="#docker-exec-的三种模式" class="headerlink" title="docker exec 的三种模式"></a>docker exec 的三种模式</h3><ul>
+<li><p>Basic mode – Runs the command in the container synchronously on the command line</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker exec sleeper echo &quot;hello host from container&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Daemon mode – Runs the command in the background on the container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker exec -d sleeper find / -ctime 7 -name &apos;*log&apos; -exec rm &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Interactive mode – Runs the command and allows the user to interact with it</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker exec -i -t sleeper /bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="ENTRYPOINT-v-s-CMD"><a href="#ENTRYPOINT-v-s-CMD" class="headerlink" title="ENTRYPOINT v.s. CMD"></a>ENTRYPOINT v.s. CMD</h3><p>例如一个脚本 clean_log 用于清理 N 天没有变动过的文件，天数 N 为传入参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">echo &quot;Cleaning logs over $1 days old&quot;</span><br><span class="line">find /log_dir -ctime &quot;$1&quot; -name &apos;*log&apos; -exec rm &#123;&#125; \;</span><br></pre></td></tr></table></figure></p>
+<p>容器化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:14.04</span><br><span class="line">ADD clean_log /usr/bin/clean_log</span><br><span class="line">RUN chmod +x /usr/bin/clean_log</span><br><span class="line">ENTRYPOINT [&quot;/usr/bin/clean_log&quot;]</span><br><span class="line">CMD [&quot;7&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>这里面有几个重点需要注意：</p>
+<ul>
+<li>清理的目标目录 /log_dir，这个是在 docker run 的时候，通过 -v 选项动态 mount 即可</li>
+<li>当 Dockerfile 中同时具有 ENTRYPOINT 和 CMD 的时候，CMD 定义为 ENTRYPOINT 的默认参数</li>
+<li>当容器运行时，如果有 ENTRYPOINT，那么一定会被运行；此时如果 docker run 还提供了 command 参数，那么这个 command 不会执行，而是作为 ENTRYPOINT 的参数，替代 CMD 指令中的参数</li>
+<li>如果就不要 ENTRYPOINT，唯一的办法是使用 docker run 的 –entrypoint 选项</li>
+<li>无论 ENTRYPOINT 还是 CMD 都采用了 array 模式，而不是 shell 命令模式，这是因为后者会自动加入 /bin/bash -c 前缀，也许有时这是你需要的，但是大部分情况下可能会引起未知的结果，故此倾向于 array 模式</li>
+</ul>
+<p>比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker build -t log-cleaner .</span><br><span class="line">docker run -v /var/log/myapplogs:/log_dir log-cleaner 365</span><br></pre></td></tr></table></figure></p>
+<p>这个 docker run 的 command 参数 365 成为了 ENTRYPOINT 的参数；故此如果把 365 改为 /bin/bash，是不会运行 bash </p>
+<p>shell的，而是把 ‘/bin/bash’ 作为 clean_log 的参数，这显然会报错 </p>
+<blockquote>
+<p>find: invalid argument <code>-name&#39; to</code>-ctime’</p>
+</blockquote>
+<h3 id="保证镜像中的软件版本-for-debian-based-images"><a href="#保证镜像中的软件版本-for-debian-based-images" class="headerlink" title="保证镜像中的软件版本 (for debian based images)"></a>保证镜像中的软件版本 (for debian based images)</h3><p>例如 nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ apt-cache show nginx | grep ^Version:</span><br><span class="line">Version: 1.4.6-1ubuntu3</span><br></pre></td></tr></table></figure></p>
+<p>于是 Dockerfile 中可以指定版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RUN apt-get -y install nginx=1.4.6-1ubuntu3</span><br></pre></td></tr></table></figure></p>
+<p>然而依赖库怎么办呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt-cache --recurse depends nginx</span><br></pre></td></tr></table></figure></p>
+<p>通过 –recurse 参数迭代检测依赖软件的版本，然后一一指定在 Dockerfile 中</p>
+<p>似乎有些麻烦啊？作者提供了一个容器来简化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -ti dockerinpractice/get-versions vim</span><br><span class="line">RUN apt-get install -y \</span><br><span class="line">vim=2:7.4.052-1ubuntu3 vim-common=2:7.4.052-1ubuntu3 \</span><br><span class="line">vim-runtime=2:7.4.052-1ubuntu3 libacl1:amd64=2.2.52-1 \</span><br><span class="line">..........</span><br></pre></td></tr></table></figure></p>
+<p>看到，docker run 中指定需要处理的软件，容器运行之后会输出 vim 自身及所有依赖的软件的全部版本</p>
+<h3 id="Dockerfile-中要替换多个文件中的文本？使用-perl-pie"><a href="#Dockerfile-中要替换多个文件中的文本？使用-perl-pie" class="headerlink" title="Dockerfile 中要替换多个文件中的文本？使用 perl -pie"></a>Dockerfile 中要替换多个文件中的文本？使用 perl -pie</h3><p>sed -i 也可以做类似的替换工作，那么为什么要使用 perl -pie 呢？</p>
+<ul>
+<li>天生可以作用于多个文件，一个文件即使处理失败也不会异常退出</li>
+<li>可以使用其他的符号代替通常的 ‘/‘ forward slashes 符号</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ perl -p -i -e &apos;s/127\.0\.0\.1/0.0.0.0/g&apos; *       &lt;-- 通配符，处理多个文件</span><br><span class="line"></span><br><span class="line">$ perl -p -i -e &apos;s/\/usr\/share\/www/\/var\/www\/html/g&apos; /etc/apache2/*</span><br><span class="line">$ perl -p -i -e &apos;s@/usr/share/www@/var/www/html/@g&apos; /etc/apache2/*     &lt;-- 这个和上面的一样，但是使用 @ 代替 /</span><br></pre></td></tr></table></figure>
+<h3 id="Flattening-images"><a href="#Flattening-images" class="headerlink" title="Flattening images"></a>Flattening images</h3><p>有时 Dockerfile 中会涉及一些隐私信息或者重要信息文件不想泄漏，那么在 Dockerfile 的最后几步把这些文件删除，有用么？</p>
+<p>没有！因为 Docker 中镜像是分层的，这些文件在比较老的 layers 中依旧存在，只是在删除之后的 layers 中不存在而已</p>
+<p>可以通过 docker history 命令查看 layers 信息，然后对老的 layers 调用 docker run 导出隐私文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker history mysecret</span><br><span class="line">..........</span><br><span class="line">$ docker run 5b376ff3d7cd cat /tmp/secret_key</span><br><span class="line">My Big Secret</span><br></pre></td></tr></table></figure></p>
+<p>如何解决这个问题？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d mysecret /bin/true</span><br><span class="line">28cde380f0195b24b33e19e132e81a4f58d2f055a42fa8406e755b2ef283630f</span><br><span class="line">$ docker export 28cde380f | docker import - mysecret     &lt;--- 先 export 在 import，去掉 layers 信息</span><br><span class="line">$ docker history mysecret</span><br><span class="line">IMAGE CREATED CREATED BY SIZE             &lt;--- 看到最后只有一个 layer了</span><br><span class="line">fdbeae08751b 13 seconds ago 85.01 MB</span><br></pre></td></tr></table></figure></p>
+<h3 id="让镜像更小之-Dockerfile-篇"><a href="#让镜像更小之-Dockerfile-篇" class="headerlink" title="让镜像更小之 Dockerfile 篇"></a>让镜像更小之 Dockerfile 篇</h3><ul>
+<li>FROM 指令选择比较小的 base 镜像，虽然这意味着会少一些软件，只要保证需要的软件都在即可；甚至使用 BusyBox 或 Alpine</li>
+<li>镜像构建完成之前，删除不再需要的中间文件或者源软件安装包。需要指出，这些删除也需要使用 RUN 指令调用，而由于 Docker 的 layer 机制，每个 RUN 指令都会在最终的镜像上添加一个 copy-on-write layer，这会间接的增大最终镜像，故此，可能最终镜像看起来并没有减少</li>
+<li>紧跟前一条，显然我们需要减少 RUN 指令的个数。一种方法是把所需要的命令都放到同一个 RUN 指令中；另一种方法是把命令写到一个 shell 脚本中，然后在 Dockerfile 中 RUN 这个脚本即可</li>
+</ul>
+<p>Side Note 1. 把全部命令集中到同一个 RUN 指令中的方法，在优化了镜像空间的同时，牺牲了 Docker layer 带来的 build flexibility 以及 build time (layer cache)</p>
+<p>Side Note 2. 什么是 copy-on-write? 这是 Docker 最小化资源使用的重要方法，当多个容器都要读取同一个文件时，他们都会去包含该文件的 topmost layer 去找，也就是说，读取的是同一个文件，这就避免的把这个文件 copy 到每个容器中，极大的减小了容器的体积。只有当某个容器需要修改文件时，该文件才被 copy 到该容器中。</p>
+<h3 id="让镜像更小之-Tricks-篇"><a href="#让镜像更小之-Tricks-篇" class="headerlink" title="让镜像更小之 Tricks 篇"></a>让镜像更小之 Tricks 篇</h3><ul>
+<li>通常在 Dockerfile 中 RUN 的 apt-get/yum 等命令并不会做清理工作，那么我们这样做</li>
+</ul>
+<blockquote>
+<p>build 镜像 =&gt; 运行容器 =&gt; 进容器删除不需要的文件 =&gt; docker commit 为新的镜像 =&gt; flatten 镜像 (export再import)</p>
+</blockquote>
+<p>其中，删除部分通常包括<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dpkg -l | awk &apos;&#123;print $2&#125;&apos; 查看安装包</span><br><span class="line">apt-get purge -y $&#123;unnecessary_package_name&#125; (如果警告 potentially harmful，就返回继续其他 package)</span><br><span class="line">apt-get autoremove &amp;&amp; apt-get clean  来清理 cache</span><br><span class="line">rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/*  来删除文档</span><br><span class="line">find /var | grep &apos;\.log$&apos; | xargs rm -v  来删除 logs</span><br></pre></td></tr></table></figure></p>
+<h3 id="让镜像更小之-Nuclear-武器篇-inotifywait"><a href="#让镜像更小之-Nuclear-武器篇-inotifywait" class="headerlink" title="让镜像更小之 Nuclear 武器篇 - inotifywait"></a>让镜像更小之 Nuclear 武器篇 - inotifywait</h3><p>nifty 工具可以监控哪些文件被容器引用，然后清除掉它们；这个方法有很大风险，尽量不要应用到生产环境；但是能让我们更好的了解系统<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ apt-get update &amp;&amp; apt-get install -y inotify-tools</span><br><span class="line">$ inotifywait -r -d -o /tmp/inotifywaitout.txt /bin /etc /lib /sbin /var</span><br></pre></td></tr></table></figure></p>
+<p>-r 递归查看子目录； -o 输出文件</p>
+<h3 id="使用-C-或者-Go-创建没有外部依赖的-Docker-镜像"><a href="#使用-C-或者-Go-创建没有外部依赖的-Docker-镜像" class="headerlink" title="使用 C 或者 Go 创建没有外部依赖的 Docker 镜像"></a>使用 C 或者 Go 创建没有外部依赖的 Docker 镜像</h3><p>C、Go 等编译语言可以制作 statically linked binary，比如</p>
+<ul>
+<li>gcc -static hi.c -w -o hi</li>
+<li>CGO_ENABLED=0 go get -a -ldflags ‘-s’ -installsuffix cgo github.com/docker-in-practice/go-web-server</li>
+</ul>
+<p>对于没有外部依赖的镜像，可以使用 scratch (空镜像) 作为 base 镜像，ADD binary，然后 CMD/ENTRYPOINT binary 即可</p>
+<h3 id="DEBIAN-FRONTEND-noninteractive-apt-get-install-qy-package"><a href="#DEBIAN-FRONTEND-noninteractive-apt-get-install-qy-package" class="headerlink" title="DEBIAN_FRONTEND=noninteractive apt-get install -qy ${package}"></a>DEBIAN_FRONTEND=noninteractive apt-get install -qy ${package}</h3><p>保证安装过程不提示输入</p>
+<h3 id="利用-DockerHub-进行自动构建镜像"><a href="#利用-DockerHub-进行自动构建镜像" class="headerlink" title="利用 DockerHub 进行自动构建镜像"></a>利用 DockerHub 进行自动构建镜像</h3><ol>
+<li>创建 Github (BitBucket) 项目，然后 clone 到本地。添加 Dockerfile 文件，提交到 Github</li>
+<li>创建 DockerHub 帐号，登录，把 DockerHub Repo 和 Git Repo 进行绑定，等待 DockerHub 自动构建镜像完毕</li>
+<li>之后，当再次更改 Dockerfile，DockerHub 都会自动检测到更新，并重新自动 build 镜像</li>
+</ol>
+<p>和 Dockerfile 一起，可能还需要一个 bash_extra，配合 DockerHub 做一些配置工作</p>
+<h3 id="针对-IO-intensive-的镜像通过-eatmydata-库来提高测试、开发环境的持续集成速度"><a href="#针对-IO-intensive-的镜像通过-eatmydata-库来提高测试、开发环境的持续集成速度" class="headerlink" title="针对 IO-intensive 的镜像通过 eatmydata 库来提高测试、开发环境的持续集成速度"></a>针对 IO-intensive 的镜像通过 eatmydata 库来提高测试、开发环境的持续集成速度</h3><p>应用把数据写入文件通常有两个方法：1. 把写操作告诉 OS，后者会 cahe 数据直到写入完成；2. 强制系统调用写文件</p>
+<p>eatmydata 库会让系统调用直接返回而不真正写入数据，在加快速度的同时，也会引起数据的 inconsistent，故此只用于测试或者开发环境</p>
+<p>方法是在镜像 (Dockerfile) 中安装 libeatmydata，然后在 docker run 的时候，在真正的命令前面加上 eatmydata</p>
+<blockquote>
+<p>docker run -d mybuildautomation eatmydata /run_tests.sh</p>
+</blockquote>
+<h3 id="利用-Squid-搭建-Package-Cache-来加速构建过程"><a href="#利用-Squid-搭建-Package-Cache-来加速构建过程" class="headerlink" title="利用 Squid 搭建 Package Cache 来加速构建过程"></a>利用 Squid 搭建 Package Cache 来加速构建过程</h3><p>容器运行的时候如果要安装 package，会带来很大的网络开销；利用 Squid Proxy 缓存住已经下载的 package，加速构建速度</p>
+<p>Squid Proxy 安装在 Host 中，然后各容器直接向 Squid Proxy 下载 package，由后者代理下载或者下发已缓存的 package</p>
+<p>Debian<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Host 安装 squid</span><br><span class="line">sudo apt-get install squid-deb-proxy</span><br><span class="line"></span><br><span class="line"># 容器对应的镜像 Dockerfile 中设置 squid 代理</span><br><span class="line">FROM debian</span><br><span class="line">RUN apt-get update -y &amp;&amp; apt-get install net-tools                 # 安装 net-tools 以使用 route</span><br><span class="line">RUN echo &quot;Acquire::http::Proxy \&quot;http://$( \</span><br><span class="line">route -n | awk &apos;/^0.0.0.0/ &#123;print $2&#125;&apos; \                           # 使用 route + awk 获取 Host ip 地址</span><br><span class="line">):8000\&quot;;&quot;  &gt; /etc/apt/apt.conf.d/30proxy                          # 把 HostIp:8000 配置到 apt 的代理配置文件中</span><br><span class="line">RUN echo &quot;Acquire::http::Proxy::ppa.launchpad.net DIRECT;&quot; &gt;&gt; /etc/apt/apt.conf.d/30proxy</span><br><span class="line">CMD [&quot;/bin/bash&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>注意，这个 Host ip 是容器所处网络中的宿主机的 ip，而不是外部 ip；容器可以通过这个内网 ip，访问到宿主机上的 squid 服务</p>
+<p>CentOS<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 安装后需要调整 /etc/squid/squid.conf 文件，增大 cache 空间</span><br><span class="line">cache_dir ufs /var/spool/ squid 10000 16 256.</span><br><span class="line"></span><br><span class="line"># Dockerfile 也是类似的</span><br><span class="line">FROM centos:centos7</span><br><span class="line">RUN yum update -y &amp;&amp; yum install -y net-tools</span><br><span class="line">RUN echo &quot;proxy=http://$(route -n | awk &apos;/^0.0.0.0/ &#123;print $2&#125;&apos;):3128&quot; &gt;&gt; /etc/yum.conf</span><br><span class="line">RUN sed -i &apos;s/^mirrorlist/#mirrorlist/&apos; /etc/yum.repos.d/CentOS-Base.repo   # 避免使用 mirror</span><br><span class="line">RUN sed -i &apos;s/^#baseurl/baseurl/&apos; /etc/yum.repos.d/CentOS-Base.repo         # 只使用 baseurl</span><br><span class="line">RUN rm -f /etc/yum/pluginconf.d/fastestmirror.conf                          # 不再需要 fastestmirror</span><br><span class="line">RUN yum update -y                                                           # 更新，保证上面生效</span><br><span class="line">CMD [&quot;/bin/bash&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>前面都是说把 Squid 安装在 Host；可以参考<a href="https://github.com/jpetazzo/squid-in-a-can" target="_blank" rel="external">这篇文档</a> 来把 Squid 安装在容器中</p>
+<h3 id="容器获取宿主机的-IP"><a href="#容器获取宿主机的-IP" class="headerlink" title="容器获取宿主机的 IP"></a>容器获取宿主机的 IP</h3><p>当然，这个 ip 并不是外部看到的宿主机 ip，而是 from the point of view of the container，类似 172.27.0.1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip route | grep &quot;default via&quot; |awk &apos;&#123;print $3&#125;&apos;</span><br></pre></td></tr></table></figure></p>
+<p>上一节中，我们还看到类似的指令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># install net-tools first</span><br><span class="line">route -n |awk &apos;/^0.0.0.0/ &#123;print $2&#125;&apos;</span><br></pre></td></tr></table></figure></p>
+<p>其实，这个宿主机的 IP 就是容器所处的 bridge 网络的网关，通过宿主机的 IP，容器可以访问宿主机的服务</p>
+<h3 id="在不同-registry-之间转移-docker-镜像"><a href="#在不同-registry-之间转移-docker-镜像" class="headerlink" title="在不同 registry 之间转移 docker 镜像"></a>在不同 registry 之间转移 docker 镜像</h3><ul>
+<li><p>如果有一个环境能同时访问两个不同的 registry，那么打个 tag 再 push 即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull $OLDREG/$MYIMAGE</span><br><span class="line">$ docker tag -f $OLDREG/$MYIMAGE $NEWREG/$MYIMAGE</span><br><span class="line">$ docker push $NEWREG/$MYIMAGE</span><br><span class="line">$ docker rmi $(docker images -q --filter dangling=true)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>同上述情况，但是传递多个相似的镜像</p>
+</li>
+</ul>
+<p>Docker 镜像有 layer 机制，docker push/pull 只会对共享的 layers 传输一次，这对传输共享很多 layers 的镜像很有利</p>
+<p>但是例如 ubuntu:14.04.1 和 ubuntu:14.04.2，完全没有共享任何 layers，但其实镜像中的文件非常相似；这种情况下，<a href="https://github.com/docker-in-practice/dbup" target="_blank" rel="external">dbup</a> 会更有帮助。它会开辟一个存储空间，检测镜像文件中的 duplication，对这些重复项只保存一次；也就是说，dbup 实现了一套和 docker 并行的，也是基于 deduplication 的存储。</p>
+<p>以 ubuntu:14.04.1 和 ubuntu:14.04.2 为例。首先在两个 registry 上都创建 dbup 环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir bup_pool    &lt;-- 存储空间</span><br><span class="line">$ alias dbup=&quot;docker run --rm \</span><br><span class="line">-v $(pwd)/bup_pool:/pool -v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">dockerinpractice/dbup&quot;</span><br></pre></td></tr></table></figure></p>
+<p>在源 registry<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull ubuntu:14.04.1</span><br><span class="line">$ docker pull ubuntu:14.04.2</span><br><span class="line">$ dbup save ubuntu:14.04.1</span><br><span class="line">$ dbup save ubuntu:14.04.2</span><br></pre></td></tr></table></figure></p>
+<p>rsync bup_pool 目录到目的 registry，然后执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ dbup load ubuntu:14.04.1</span><br><span class="line">$ dbup load ubuntu:14.04.2</span><br><span class="line">$ docker push ubuntu:14.04.1</span><br><span class="line">$ docker push ubuntu:14.04.2</span><br></pre></td></tr></table></figure></p>
+<p>这里 docker push / pull 的过程，没有因为 layer 机制减少数据量 (因为没有共享的 layers)；而在 dbup save /load 的过程中减少了数据量，更重要的在 rsync 网络传输的时候减少了数据量，因为 dbup 进行了 deduplication 的存储</p>
+<ul>
+<li>Docker 镜像保存为 TAR 文件传输<ul>
+<li>export 把容器导出为 TAR，丢掉 layers 信息</li>
+<li>import 把 TAR 导入为镜像，没有 layers 信息</li>
+<li>save 把镜像保存为 TAR，保留 layers 信息</li>
+<li>load 把 TAR 加载为镜像，带着 layers 信息</li>
+</ul>
+</li>
+</ul>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker save debian:7.3 | ssh example.com docker import -      &lt;-- 最后面的&quot;-&quot; dash 符号表示从标准输入导入</span><br><span class="line">$ docker save debian:7.3 | ssh example.com docker load          &lt;-- load 不需要 dash</span><br></pre></td></tr></table></figure></p>
+<h3 id="SQLite-and-Proxy-setup-with-docker-compose-and-socat"><a href="#SQLite-and-Proxy-setup-with-docker-compose-and-socat" class="headerlink" title="SQLite and Proxy setup with docker compose and socat"></a>SQLite and Proxy setup with docker compose and socat</h3><p>首先创建一个 SQLite 和 Proxy 容器共享的镜像 Dockerfile<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:14.04</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get -y install rlwrap sqlite3 socat</span><br><span class="line">EXPOSE 12345</span><br></pre></td></tr></table></figure></p>
+<p>其中 rlwrap 是用于美化 telnet 的命令行输入输出的，和整个构架无关</p>
+<p>ok，现在可以实现 docker-compose.yml 文件了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  command: socat TCP-L:12345,fork,reuseaddr EXEC:&apos;sqlite3 /opt/sqlite/db&apos;,pty</span><br><span class="line">  build: .</span><br><span class="line">  volumes:</span><br><span class="line">    - /tmp/sqlitedbs/test:/opt/sqlite/db</span><br><span class="line"></span><br><span class="line">proxy:</span><br><span class="line">  command: socat TCP-L:12346,fork,reuseaddr TCP:sqliteserver:12345</span><br><span class="line">  build: .</span><br><span class="line">  links:</span><br><span class="line">    - server:sqliteserver</span><br><span class="line">  ports:</span><br><span class="line">    - 12346:12346</span><br></pre></td></tr></table></figure></p>
+<p>要点如下：</p>
+<ul>
+<li>server 和 proxy 都使用本目录下的 Dockerfile build 镜像</li>
+<li>server 容器监听 12345 端口的消息，收到消息后执行 sqlite3；</li>
+<li>proxy 容器 link 上 server 容器，监听 12346 端口，收到消息转发到 server 容器的 12345 端口 (继而执行 sqlite)</li>
+<li>server 和 proxy 的 TCP 参数 “fork,reuseaddr” 表示支持多用户访问，也即所谓多路复用机制 multiplexing</li>
+<li>server 通过 volumes mount 了 host 宿主的 /temp/sqlitedbs/ 目录，这样可以在宿主上创建 SQLite 数据库，由 server 容器管理</li>
+</ul>
+<p>Proxy 模式优点是隐藏了 SQLite 服务，让真正的服务和网络连接的职责分离</p>
+<p>客户端访问类似下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ rlwrap telnet localhost 12346</span><br><span class="line">Trying 127.0.0.1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &apos;^]&apos;.</span><br><span class="line">SQLite version 3.7.17</span><br><span class="line">Enter &quot;.help&quot; for instructions</span><br><span class="line">sqlite&gt;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/笔记/" rel="tag">#笔记</a>
+          
+            <a href="/tags/Docker/" rel="tag">#Docker</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/08/Learning_Scala/" rel="next" title="First Step on Scala">
+                <i class="fa fa-chevron-left"></i> First Step on Scala
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/30/Docker-in-Practice-Foundamental/"
+           data-title="Docker in Practice" data-url="http://ijustloveses.github.io/2016/11/30/Docker-in-Practice-Foundamental/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="泡茶" />
+          <p class="site-author-name" itemprop="name">泡茶</p>
+          <p class="site-description motion-element" itemprop="description">专注并发和机器学习</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ijustloveses" target="_blank" title="Github" rel="external nofollow">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-fundamentals"><span class="nav-number">1.</span> <span class="nav-text">Docker fundamentals</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-diff"><span class="nav-number">1.0.1.</span> <span class="nav-text">docker diff</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-daemon-amp-client"><span class="nav-number">1.0.2.</span> <span class="nav-text">docker daemon & client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#允许-Docker-Daemon-被远程访问"><span class="nav-number">1.0.3.</span> <span class="nav-text">允许 Docker Daemon 被远程访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器运行为后台服务"><span class="nav-number">1.0.4.</span> <span class="nav-text">容器运行为后台服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置-Docker-Storage-的位置"><span class="nav-number">1.0.5.</span> <span class="nav-text">设置 Docker Storage 的位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-socat-作为-proxy-来监控-Docker-API-traffic"><span class="nav-number">1.0.6.</span> <span class="nav-text">使用 socat 作为 proxy 来监控 Docker API traffic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linking-containers"><span class="nav-number">1.0.7.</span> <span class="nav-text">Linking containers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-up-a-local-Docker-registry"><span class="nav-number">1.0.8.</span> <span class="nav-text">Setting up a local Docker registry</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#管理容器内服务的启动"><span class="nav-number">1.0.9.</span> <span class="nav-text">管理容器内服务的启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-commit-只能提交文件系统的修改"><span class="nav-number">1.0.10.</span> <span class="nav-text">docker commit 只能提交文件系统的修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Referring-to-a-specific-image-in-builds"><span class="nav-number">1.0.11.</span> <span class="nav-text">Referring to a specific image in builds</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Volumn-的一些注意事项"><span class="nav-number">1.0.12.</span> <span class="nav-text">Volumn 的一些注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何保留容器中的-Bash-History"><span class="nav-number">1.0.13.</span> <span class="nav-text">如何保留容器中的 Bash History</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Only-Container-–-Docker-常见模式之一"><span class="nav-number">1.0.14.</span> <span class="nav-text">Data-Only Container – Docker 常见模式之一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过-BitTorrent-Sync-让-data-container-的-volumn-能够自动和远程数据源同步"><span class="nav-number">1.0.15.</span> <span class="nav-text">通过 BitTorrent Sync 让 data container 的 volumn 能够自动和远程数据源同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过-SSHFS-直接-mount-远程-volume"><span class="nav-number">1.0.16.</span> <span class="nav-text">通过 SSHFS 直接 mount 远程 volume</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过-NFS-直接-mount-远程-volume"><span class="nav-number">1.0.17.</span> <span class="nav-text">通过 NFS 直接 mount 远程 volume</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器使用-host-的资源"><span class="nav-number">1.0.18.</span> <span class="nav-text">容器使用 host 的资源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看容器"><span class="nav-number">1.0.19.</span> <span class="nav-text">查看容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理容器"><span class="nav-number">1.0.20.</span> <span class="nav-text">清理容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-Machine"><span class="nav-number">1.0.21.</span> <span class="nav-text">Docker Machine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile-之-ADD"><span class="nav-number">1.0.22.</span> <span class="nav-text">Dockerfile 之 ADD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-build-过程中的-cache"><span class="nav-number">1.0.23.</span> <span class="nav-text">Docker build 过程中的 cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Running-Docker-without-sudo"><span class="nav-number">1.0.24.</span> <span class="nav-text">Running Docker without sudo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理-Containers"><span class="nav-number">1.0.25.</span> <span class="nav-text">清理 Containers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Detaching-containers-without-stopping-them"><span class="nav-number">1.0.26.</span> <span class="nav-text">Detaching containers without stopping them</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-DockerUI-来管理-Docker-Daemon"><span class="nav-number">1.0.27.</span> <span class="nav-text">使用 DockerUI 来管理 Docker Daemon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成-Docker-images-间的依赖图"><span class="nav-number">1.0.28.</span> <span class="nav-text">生成 Docker images 间的依赖图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-exec-的三种模式"><span class="nav-number">1.0.29.</span> <span class="nav-text">docker exec 的三种模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ENTRYPOINT-v-s-CMD"><span class="nav-number">1.0.30.</span> <span class="nav-text">ENTRYPOINT v.s. CMD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保证镜像中的软件版本-for-debian-based-images"><span class="nav-number">1.0.31.</span> <span class="nav-text">保证镜像中的软件版本 (for debian based images)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile-中要替换多个文件中的文本？使用-perl-pie"><span class="nav-number">1.0.32.</span> <span class="nav-text">Dockerfile 中要替换多个文件中的文本？使用 perl -pie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flattening-images"><span class="nav-number">1.0.33.</span> <span class="nav-text">Flattening images</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让镜像更小之-Dockerfile-篇"><span class="nav-number">1.0.34.</span> <span class="nav-text">让镜像更小之 Dockerfile 篇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让镜像更小之-Tricks-篇"><span class="nav-number">1.0.35.</span> <span class="nav-text">让镜像更小之 Tricks 篇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让镜像更小之-Nuclear-武器篇-inotifywait"><span class="nav-number">1.0.36.</span> <span class="nav-text">让镜像更小之 Nuclear 武器篇 - inotifywait</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-C-或者-Go-创建没有外部依赖的-Docker-镜像"><span class="nav-number">1.0.37.</span> <span class="nav-text">使用 C 或者 Go 创建没有外部依赖的 Docker 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DEBIAN-FRONTEND-noninteractive-apt-get-install-qy-package"><span class="nav-number">1.0.38.</span> <span class="nav-text">DEBIAN_FRONTEND=noninteractive apt-get install -qy ${package}</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用-DockerHub-进行自动构建镜像"><span class="nav-number">1.0.39.</span> <span class="nav-text">利用 DockerHub 进行自动构建镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#针对-IO-intensive-的镜像通过-eatmydata-库来提高测试、开发环境的持续集成速度"><span class="nav-number">1.0.40.</span> <span class="nav-text">针对 IO-intensive 的镜像通过 eatmydata 库来提高测试、开发环境的持续集成速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用-Squid-搭建-Package-Cache-来加速构建过程"><span class="nav-number">1.0.41.</span> <span class="nav-text">利用 Squid 搭建 Package Cache 来加速构建过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器获取宿主机的-IP"><span class="nav-number">1.0.42.</span> <span class="nav-text">容器获取宿主机的 IP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在不同-registry-之间转移-docker-镜像"><span class="nav-number">1.0.43.</span> <span class="nav-text">在不同 registry 之间转移 docker 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQLite-and-Proxy-setup-with-docker-compose-and-socat"><span class="nav-number">1.0.44.</span> <span class="nav-text">SQLite and Proxy setup with docker compose and socat</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">泡茶</span>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"paochashuo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
